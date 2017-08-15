@@ -1,0 +1,3 @@
+Name,Owner,PlannedStartDate,PlannedEndDate,Description,DisplayColor,InvestmentCategory,Ready,RiskScore,ValueScore,Project,PreliminaryEstimate,State,listing_order
+Revamp online presence,paul@acme.com,7/1/2017 10:59,12/30/2017 10:59,,,Strategic Growth,FALSE,3,6,Online Store,L,Developing,1
+Create best in class platform,aaron@acme.com,6/10/2017 10:59,2/13/2018 10:59,,,Strategic Growth,FALSE,5,8,Platform,XL,Discovering,2

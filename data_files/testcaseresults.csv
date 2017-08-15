@@ -1,0 +1,80 @@
+Build,Date,Duration,Notes,Verdict,TestCase,TestSet,Tester,listing_order
+113,8/10/2017 10:59,0,,Pass,Check Invoice Creation,,,1
+114,8/10/2017 10:59,0,,Pass,Check Invoice Creation,,,2
+1.2.24,8/10/2017 10:59,1,"Only showing 1 order, not 2.",Fail,Check the Status of Your Orders,,,3
+112,8/10/2017 10:59,0,,Pass,Check the Status of Your Orders,,,4
+115,2016-01-31T20:40:03.000Z,0,,Pass,Check the Status of Your Orders,,,5
+117,2016-01-30T20:40:14.000Z,0,,Fail,Default Shipping - Ground,,,6
+118,2016-01-31T20:40:14.000Z,0,,Fail,Default Shipping - Ground,,,7
+118,2016-01-29T20:40:13.000Z,0,,Pass,GUI - Checkout Button,,,8
+119,2016-01-30T20:40:13.000Z,0,,Pass,GUI - Checkout Button,,,9
+113,8/10/2017 10:59,0,,Pass,GUI - Checkout Button for Empty Cart,,,10
+114,2016-01-30T20:40:14.000Z,0,,Pass,GUI - Checkout Button for Empty Cart,,,11
+115,2016-01-31T20:40:14.000Z,0,,Pass,GUI - Checkout Button for Empty Cart,,,12
+113,8/10/2017 10:59,0,,Pass,GUI - Multi-Site Shipping Options,,,13
+114,2016-01-30T20:40:16.000Z,0,,Pass,GUI - Multi-Site Shipping Options,,,14
+115,2016-01-31T20:40:17.000Z,0,,Fail,GUI - Multi-Site Shipping Options,,,15
+113,8/10/2017 10:59,0,,Pass,Invalid Promo Code,,,16
+114,2016-01-30T20:40:15.000Z,0,,Pass,Invalid Promo Code,,,17
+115,2016-01-31T20:40:15.000Z,0,,Fail,Invalid Promo Code,,,18
+1.2.24,8/10/2017 10:59,2,,Pass,Log-in to Secured Website,,,19
+112,8/10/2017 10:59,0,,Fail,Log-in to Secured Website,,,20
+113,8/10/2017 10:59,0,,Pass,Log-in to Secured Website,,,21
+114,8/10/2017 10:59,0,,Pass,Log-in to Secured Website,,,22
+1.2.24,8/10/2017 10:59,1,,Pass,Log-off Website,,,23
+112,8/10/2017 10:59,0,,Fail,Log-off Website,,,24
+115,2016-01-31T20:40:02.000Z,0,,Pass,Log-off Website,,,25
+113,8/10/2017 10:59,0,,Pass,Max Number of Shipping Destinations,,,26
+114,2016-01-30T20:40:16.000Z,0,,Pass,Max Number of Shipping Destinations,,,27
+115,2016-01-31T20:40:16.000Z,0,,Fail,Max Number of Shipping Destinations,,,28
+113,8/10/2017 10:59,0,,Pass,No Address Entered,,,29
+114,8/10/2017 10:59,0,,Pass,No Address Entered,,,30
+115,2016-01-31T20:40:07.000Z,0,,Pass,No Address Entered,,,31
+113,8/10/2017 10:59,0,,Pass,One Promo Code per order,,,32
+114,2016-01-30T20:40:16.000Z,0,,Pass,One Promo Code per order,,,33
+115,2016-01-31T20:40:16.000Z,0,,Fail,One Promo Code per order,,,34
+113,8/10/2017 10:59,0,,Pass,Order Verification,,,35
+114,8/10/2017 10:59,0,,Pass,Order Verification,,,36
+113,8/10/2017 10:59,0,,Fail,Order Verification - Backordered Item Handling,,,37
+114,8/10/2017 10:59,0,,Fail,Order Verification - Backordered Item Handling,,,38
+113,8/10/2017 10:59,0,,Fail,Priority Shipping chosen on a per-package basis,,,39
+114,8/10/2017 10:59,0,,Fail,Priority Shipping chosen on a per-package basis,,,40
+113,8/10/2017 10:59,0,,Pass,Priority Shipping GUI,,,41
+114,2016-01-30T20:40:14.000Z,0,,Pass,Priority Shipping GUI,,,42
+115,2016-01-31T20:40:14.000Z,0,,Pass,Priority Shipping GUI,,,43
+117,2016-01-31T20:40:16.000Z,0,,Pass,Priority Shipping Options for each Destination,,,44
+118,2016-01-31T04:14:51.000Z,0,,Pass,Priority Shipping Options for each Destination,,,45
+113,8/10/2017 10:59,0,,Pass,Promo Code GUI,,,46
+114,2016-01-30T20:40:15.000Z,0,,Pass,Promo Code GUI,,,47
+115,2016-01-31T20:40:15.000Z,0,,Fail,Promo Code GUI,,,48
+117,2016-01-30T20:40:11.000Z,2,!! FAILURE NOTE: Unable to purchase exactly MAX items. Error message indicates count exceeded.  Is this a < vs. <= condition?,Fail,Purchase MAX Items,,,49
+118,2016-01-31T20:40:12.000Z,1.5,!! FAILURE NOTE: Set # of products to MAX but response email shows MAX minus 1.,Fail,Purchase MAX Items,,,50
+113,8/10/2017 10:59,4,!! FAILURE NOTE: Error accessing purchase engine.,Fail,Purchase Multiple Items,,,51
+114,2016-01-30T20:40:11.000Z,4.5,!! FAILURE NOTE: All items are showing duplicates.,Fail,Purchase Multiple Items,,,52
+113,8/10/2017 10:59,0.5,!! FAILURE NOTE: Entered one item but the cart was still empty.,Fail,Purchase One Item,,,53
+114,2016-01-30T20:40:10.000Z,1.5,!! FAILURE NOTE: Entered one item and the cart showed duplicate entries.,Fail,Purchase One Item,,,54
+113,8/10/2017 10:59,0,,Fail,Search for Items,,,55
+114,2016-01-30T20:40:09.000Z,0,,Pass,Search for Items,,,56
+117,2016-01-30T20:40:12.000Z,1.5,!! FAILURE NOTE: Purchased MAX+1 without any error conditions.,Fail,Select MAX+1 Items,,,57
+118,2016-01-31T20:40:12.000Z,1.5,!! FAILURE NOTE: Purchased MAX+1 without any error conditions.,Fail,Select MAX+1 Items,,,58
+113,8/10/2017 10:59,0,,Pass,Shipping Address and Billing Address must match,,,59
+114,8/10/2017 10:59,0,,Pass,Shipping Address and Billing Address must match,,,60
+115,2016-01-31T20:40:07.000Z,0,,Pass,Shipping Address and Billing Address must match,,,61
+113,8/10/2017 10:59,0,,Pass,"System should support 10,000 concurrent users",,,62
+114,8/10/2017 10:59,0,,Pass,"System should support 10,000 concurrent users",,,63
+115,2016-01-31T20:40:04.000Z,0,,Pass,"System should support 10,000 concurrent users",,,64
+1.2.24,8/10/2017 10:59,1,,Pass,Tracking Information,,,65
+113,8/10/2017 10:59,0,,Pass,Tracking Information,,,66
+114,8/10/2017 10:59,0,,Fail,Tracking Information,,,67
+113,8/10/2017 10:59,0,,Fail,Validate Email Address - Email Authentication,,,68
+114,2016-01-31T04:14:51.000Z,0,,Pass,Validate Email Address - Email Authentication,,,69
+113,8/10/2017 10:59,0,,Fail,Validate Email Address - Invalid Address Handling,,,70
+114,2016-01-31T20:40:08.000Z,0,,Pass,Validate Email Address - Invalid Address Handling,,,71
+113,8/10/2017 10:59,0,,Fail,Validate Email Address - Permissions,,,72
+114,2016-01-30T20:40:09.000Z,0,,Pass,Validate Email Address - Permissions,,,73
+113,8/10/2017 10:59,0,,Pass,Validate website must be available 24x7,,,74
+114,8/10/2017 10:59,0,,Pass,Validate website must be available 24x7,,,75
+115,2016-01-31T20:40:04.000Z,0,,Fail,Validate website must be available 24x7,,,76
+200,8/10/2017 10:59,1,,Fail,Failed Test Case for Demonstration,,,77
+201,8/10/2017 10:59,1,,Pass,CheckNewPatient-QA,,,78
+202,8/10/2017 10:59,1,,Pass,CheckExistingPatient-QA,,,79

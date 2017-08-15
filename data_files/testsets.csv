@@ -1,0 +1,3 @@
+Description,Name,PlanEstimate,Ready,ScheduleState,Project,Iteration,Release,Owner,listing_order
+Test routine for checkout path using Chrome browser,Chrome Browser Tests: Checkout Path,3,FALSE,Defined,Shopping Team,Iteration 6,R2,tara@acme.com,1
+Test routine for checkout path using Firefox browser,Firefox Browser Tests: Checkout Path,3,FALSE,Defined,Shopping Team,Iteration 6,R2,tara@acme.com,2

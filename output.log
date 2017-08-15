@@ -1,0 +1,17 @@
+2017-08-14 16:32:31.957 Following entries record Rally REST API interaction via https://rally1.rallydev.com/slm/webservice/v2.0 for user: thomas.mcquitty@acme.com
+2017-08-14 16:32:31.958 GET HierarchicalRequirement?fetch=false&query=(ScheduleState = Defined)&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-08-14 16:32:32.057 200 HierarchicalRequirement?fetch=false&query=(ScheduleState%20%3D%20Defined)&workspace=workspace/142931330116&project=project TotalResultCount 2
+2017-08-14 16:32:32.520 GET HierarchicalRequirement?fetch=ObjectID&query=(FormattedID = "US1")&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-08-14 16:32:32.636 200 HierarchicalRequirement?fetch=ObjectID&query=(FormattedID%20%3D%20%22US1%22)&workspace=workspace/142931330116&project=project TotalResultCount 1
+2017-08-14 16:32:32.636 POST hierarchicalrequirement/142937318060?key=M8hS6ElmT6unqVcpmZ5ZUq7SqIlfU2omUqbnaH4YYQ&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+                            {'HierarchicalRequirement': {'FormattedID': u'US1', 'Notes': 'Workspace name does not match criteria for creation.  Names should be in the format -- first.last@acme.com-YEAR-MO-Mon as in thomas.mcquitty@acme.com-2017-08-Aug', 'ObjectID': 142937318060, 'DisplayColor': '#ff0000'}}
+2017-08-14 16:32:32.791 GET HierarchicalRequirement/142937318060?workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+2017-08-14 16:32:32.915 200 HierarchicalRequirement/142937318060?workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+2017-08-14 16:32:33.172 GET HierarchicalRequirement?fetch=ObjectID&query=(FormattedID = "US3")&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-08-14 16:32:33.276 200 HierarchicalRequirement?fetch=ObjectID&query=(FormattedID%20%3D%20%22US3%22)&workspace=workspace/142931330116&project=project TotalResultCount 1
+2017-08-14 16:32:33.276 POST hierarchicalrequirement/142977892244?key=M8hS6ElmT6unqVcpmZ5ZUq7SqIlfU2omUqbnaH4YYQ&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+                            {'HierarchicalRequirement': {'FormattedID': u'US3', 'Notes': 'Workspace name does not match criteria for creation.  Names should be in the format -- first.last@acme.com-YEAR-MO-Mon as in thomas.mcquitty@acme.com-2017-08-Aug', 'ObjectID': 142977892244, 'DisplayColor': '#ff0000'}}
+2017-08-14 16:32:33.443 GET HierarchicalRequirement/142977892244?workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+2017-08-14 16:32:33.563 200 HierarchicalRequirement/142977892244?workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false
+2017-08-14 16:32:33.565 GET HierarchicalRequirement?fetch=false&query=(ScheduleState = Completed) and (Ready = True)&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-08-14 16:32:33.683 422 Could not parse: Error parsing expression at "and": remaining is "( Ready = True )"
