@@ -20,10 +20,10 @@ from ConfigParser import SafeConfigParser
 ## get list of workspaces in completed state
 ## archive workspace and move to accepted
 
-##DONE Set Color
-##TODO Validate User
-##DONE Set up PID to ensure it doesn't execute multiple times : yes, set this up.
-##DONE Set it up for multiple instances (sales, integrations, partners)
+#TODO Set color when starting a creation of workspace.
+#TODO Set the archive so it will archive based upon ObjectID, not by name.
+#TODO If the name is wrong, update the user story
+#TODO Email if there's an error
 
 global rally
 global pidfile
