@@ -10,7 +10,7 @@ from pyral import Rally, rallyWorkset
 import copy
 import os
 import argparse
-
+from ConfigParser import SafeConfigParser
 global rally
 global server_name
 
@@ -45,7 +45,7 @@ def getUserRef(user_name):
 
     # If we need to work on another instance, say integration or partners, we need to change the email address of the users
     if server_name == "integrations" or server_name == "partners":
-	user_name = user_name.replace("@acme.com", "@" + serve_name + ".acme.com")
+	user_name = user_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
     if debug:
         print(user_names.items())
@@ -418,10 +418,16 @@ def main(args):
 	
 	#Parse Command line options
         parser = argparse.ArgumentParser("create_data")
-        parser.add_argument("server", help="Server options = sales, integrations or partner", type=str)
-        parser.add_argument("workspace_name", help="Name of the workspace to update")
+        parser.add_argument("--server", "-s", "--server", required=True, help="Server options = sales, integrations or partner", type=str)
+        parser.add_argument("--workspace_name", "-n", "--name", required=True, help="Name of the workspace to update")
         args = parser.parse_args()
-	login_name = "thomas.mcquitty@acme.com"
+	config = SafeConfigParser()
+	config.read('config.ini')
+	rally_server 	= config.get('main','server')
+	login_name 	= config.get('main','username')
+	password	= config.get('main','password')
+
+	#login_name = "thomas.mcquitty@acme.com"
 
         print "server name is %s" % args.server
         print "workspace name is %s" % args.workspace_name
@@ -436,7 +442,7 @@ def main(args):
 	if server_name == "integrations" or server_name == "partners":
 		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
-	rally = Rally('rally1.rallydev.com', login_name, 'Kanban!!', workspace=workspace_name, project='Online Store')
+	rally = Rally(rally_server, login_name, password, workspace=workspace_name, project='Online Store')
 	rally.enableLogging('output.log')
 
 	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]

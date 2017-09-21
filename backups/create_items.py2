@@ -1,39 +1,35 @@
-
+#!/usr/bin/python
 import sys
 import datetime
 import psycopg2
 import json
 import openpyxl
 import collections
-from openpyxl import Workbook
-from openpyxl import load_workbook
-from openpyxl.compat import range
-from openpyxl.utils import get_column_letter
 from pprint import pprint
 from pyral import Rally, rallyWorkset
 import copy
+import os
+import argparse
 
+global rally
+global server_name
+
+## TODO: Convert all the lookups to use the cached information
+## DONE: Adjust the command line so the environment can be passed
+## DONE: Import the data again, this time using an order field, then order the query
+## 
 
 ## Since we are creating all the objects, perhaps if we log them it will be faster.  The information will be cached and we won't need to make additional queries
 ## This will save on server performance and make the script faster
-## TODO: Convert all the lookups to use the cached information
-## TODO: Adjust the command line so the environment can be passed
-## TODO: Import the data again, this time using an order field, then order the query
-## TODO: 
 story_project_ref = {}
 story_ref = {}
 testcase_ref = {}
 defect_project_ref = {}
 defect_ref = {}
 portfolio_item_ref = {}
-options = [arg for arg in sys.argv[1:] if arg.startswith('--')]
-args = [arg for arg in sys.argv[1:] if arg not in options]
+workspace_name = ""
 
-server, user, password, apikey, workspace, project = rallyWorkset(options)
-rally = Rally('rally1.rallydev.com', 'thomas.mcquitty@acme.com', 'Kanban!!', workspace='TJM-Test', project='Online Store')
-rally.enableLogging('output.log')
 
-proj = rally.getProject()
 user_names = {}
 project_names = {}
 debug = 0
@@ -44,7 +40,12 @@ debug = 0
 ## Subsequent calls will have cached user information, speeding up the system
 def getUserRef(user_name):
     global rally
-    global user_names
+    global server_name
+    global debug
+
+    # If we need to work on another instance, say integration or partners, we need to change the email address of the users
+    if server_name == "integrations" or server_name == "partners":
+	user_name = user_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
     if debug:
         print(user_names.items())
@@ -72,6 +73,7 @@ def getProjectRef(project_name):
         print("Items:\n")
         print(project_names.items())
     
+    #let's build a list of project names and reference ids, so we don't have to query the system each time.
     if project_name in project_names:
         if debug:
             print("Found %s" % project_name)
@@ -102,26 +104,7 @@ def getIterationRef(piName):
                 if debug:
                     print pe.Name
                 if(name == piName):
-                    print pe.oid, pe.Name
-                    return pe.oid
-
-def getPortfolioItemThemeRef(piName):
-    global rally
-    debug = 1
-    if debug:
-        print "Getting Theme Ref" 
-
-    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/theme?")
-    pprint(collection)
-    assert collection.__class__.__name__ == 'RallyRESTResponse'
-    if not collection.errors:
-            for pe in collection:
-                name = '%s' % pe.Name
-		print name
-                if(name == piName):
-		    if debug:
-			    print "found portfolio item" + name
-                    print pe.oid, pe.Name
+                    #print pe.oid, pe.Name
                     return pe.oid
 
 def getPortfolioItemInitiativeRef(piName):
@@ -131,13 +114,12 @@ def getPortfolioItemInitiativeRef(piName):
         print "Getting Initiative Ref"
 
     collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/initiative?")
-    pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
                 name = '%s' % pe.Name
                 if(name == piName):
-                    print pe.oid, pe.Name
+                    #print pe.oid, pe.Name
                     return pe.oid
 
 def getPortfolioItemThemeRef(piName):
@@ -147,13 +129,12 @@ def getPortfolioItemThemeRef(piName):
         print "Getting Theme Ref"
 
     collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/theme?")
-    pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
                 name = '%s' % pe.Name
                 if(name == piName):
-                    print pe.oid, pe.Name
+                    #print pe.oid, pe.Name
                     return pe.oid
 
 def getPortfolioItemFeatureRef(piName):
@@ -163,7 +144,7 @@ def getPortfolioItemFeatureRef(piName):
         print "Getting Feature Ref"
 
     collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature?")
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
@@ -173,7 +154,7 @@ def getPortfolioItemFeatureRef(piName):
                 if(name == piName):
                     if debug:
                         print "Feature Found"
-                    print pe.oid, pe.Name
+                    #print pe.oid, pe.Name
                     return pe.oid
 
 def getPreliminaryEstimateRef(object_value):
@@ -182,13 +163,13 @@ def getPreliminaryEstimateRef(object_value):
         print "Getting Prelim Estiamte"
 
     collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/preliminaryestimate?")
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
                 name = '%s' % pe.Name
                 if(name == object_value):
-                    print pe.ref, pe.Name, pe.oid
+                    #print pe.ref, pe.Name, pe.oid
                     return pe.ref
 
 def getReleaseRef(object_value):
@@ -197,24 +178,24 @@ def getReleaseRef(object_value):
     if debug:
         print "Getting Release Data"
     collection = rally.get('Release')
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
                 name = '%s' % pe.Name
                 if(name == object_value):
-                    print pe.ref, pe.Name, pe.Project
+                    #print pe.ref, pe.Name, pe.Project
                     return pe.ref
 
 def getUserStoryRef(object_value):
     global rally
-    debug = 1
+    debug = 0
     if debug:
         print "Getting User Story Data"
-    print "Scope is : " + rally.getProject().Name
+    #print "Scope is : " + rally.getProject().Name
     args = {"projectScopeDown" : "True", "Project" : "Online Store"}
     collection = rally.get('UserStory', kwargs=args)
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
@@ -222,7 +203,7 @@ def getUserStoryRef(object_value):
                 if debug:
                     print pe.Name, pe.Project
                 if(name == object_value):
-                    print pe.ref, pe.Name, pe.Project
+                    #print pe.ref, pe.Name, pe.Project
                     return pe.ref
 
 def getTestFolderRef(object_value):
@@ -231,7 +212,7 @@ def getTestFolderRef(object_value):
     if debug:
         print "Getting User Story Data"
     collection = rally.get('TestFolder')
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
@@ -239,16 +220,16 @@ def getTestFolderRef(object_value):
                 if debug:
                     print pe.Name
                 if(name == object_value):
-                    print pe.ref, pe.Name, pe.Project
+                    #print pe.ref, pe.Name, pe.Project
                     return pe.ref
 
 def getTestCaseRef(object_value):
     global rally
-    debug = 1
+    debug = 0
     if debug:
         print "Getting TestCase Data"
     collection = rally.getCollection('https://rally1.rallydev.com/slm/webservice/v2.0/testcase?')
-    pprint(collection)
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
@@ -256,26 +237,8 @@ def getTestCaseRef(object_value):
                 if debug:
                     print pe.Name
                 if(name == object_value):
-                    print pe.ref, pe.Name,
+                    #print pe.ref, pe.Name,
                     return pe.ref
-
-def getUserStoryProjectRefByTask(object_value):
-	print "searching... %s \n" % object_value
-	query_str = "Name = " + object_value
-	response = rally.search(object_value, fetch = True, projectScopeUp=True, projectScopeDown=True, project=getProjectRef("Online Store"))
-    	assert response.__class__.__name__ == 'RallyRESTResponse'
-	assert response.status_code == 200
-   	assert response.errors   == []
-    	assert response.warnings == []
-    	assert response.resultCount > 0
-    	print(response.resultCount)
-    	for entry in response:
-		if object_value == entry.Name:
-	        	print(entry.ObjectID, entry.FormattedID, entry.Name, entry.Project)
-			#return getProjectRef(entry.Project)
-
-	print rally.getProject().ref
-	print rally.getProject().Name
 
 def myconverter(o):
     if isinstance(o, datetime.datetime):
@@ -286,6 +249,7 @@ def myconverter(o):
 def db(database_name='rally_data'):
     return psycopg2.connect("dbname=rally_data user=readonly password=readonly host=localhost")
 
+#Get the database values and store them into dictionary.
 def query_db(query, args=(), one=False):
     cur = db().cursor()
     cur.execute(query, args)
@@ -295,7 +259,7 @@ def query_db(query, args=(), one=False):
     return (r[0] if r else None) if one else r
 
 def getUserStoryRefByName(name):
-	debug = 1
+	debug = 0
 	if debug:
 		print "debug mode userstoryrefbyname"
                 print "searching for user story name %s" % name
@@ -309,7 +273,7 @@ def getUserStoryRefByName(name):
 	return ref
 
 def getTestCaseRefByName(name):
-        debug = 1
+        debug = 0
 	if debug:
                 print "debug mode test case refbyname"
                 print "searching for user story name %s" % name
@@ -324,7 +288,7 @@ def getTestCaseRefByName(name):
 
 # When creating a task, the project needs to be filled in.  We get that from the user story.
 def getProjectRefFromUserStoryName(name):
-        debug = 1
+        debug = 0
 	if debug:
                 print "debug mode projectreffromstoryname"
 		print "searching for user story name %s" % name
@@ -342,10 +306,10 @@ This determines which fields need to be translated due to being a reference valu
 If found, substitute the text with the real value
 """
 def replace_values(val, object_type):
-	debug = 1
-	print "replace values for "
-	print val
-	print " item type: " + object_type
+	debug = 0
+	#print "replace values for "
+	#print val
+	#print " item type: " + object_type
 	if debug:
 		print val
 
@@ -354,7 +318,7 @@ def replace_values(val, object_type):
 			print "we need to get a project in the task object from the story object"
                 val['project'] = getProjectRefFromUserStoryName(val['workproduct'])
 		val['workproduct'] = getUserStoryRefByName(val['workproduct'])
-		print "Workproduct %s project %s" % (val['workproduct'], val['project'])
+		#print "Workproduct %s project %s" % (val['workproduct'], val['project'])
 	if val.get("testcase"):
 		if debug:
 			print "checking for testcase"
@@ -385,7 +349,7 @@ def replace_values(val, object_type):
 		if debug:
                         print "checking for project"
                 val["project"] = getProjectRef(val["project"])
-	if val.get("workproduct") and (object_type != "Task"):
+	if val.get("workproduct") and (object_type != "Task"):		#Work product on non tasks can be a user story, so let's look that up.
 		if debug:
                         print "checking for workproduct"
                 val["workproduct"] = getUserStoryRefByName(val["workproduct"])  
@@ -397,31 +361,27 @@ def replace_values(val, object_type):
                 if debug:
                         print "getting prelim estimate"
                 val["preliminaryestimate"] = getPreliminaryEstimateRef(val["preliminaryestimate"])
-	# this may be a problem... what if parent references a story?  Need to check
-        if val.get("parent"):
+        if val.get("parent"):		# Parent can mean different objects, depending on where it is referenced.  So we determine the type and replace it.
                 if debug:
                         print "getting parent for " + object_type + "\n"
 		if object_type == "Initiative":
-			val["parent"] = getPortfolioItemThemeRef(val["parent"])  #Something is going on here.  It's getting the first record, but not the second.
+			val["parent"] = getPortfolioItemThemeRef(val["parent"]) 
 		if object_type == "Feature":
-			val["parent"] = getPortfolioItemInitiativeRef(val["parent"]) # get parent to the feature, which is the initiative
-
-                #val["parent"] = getPortfolioItemThemeRef(val["parent"])
+			val["parent"] = getPortfolioItemInitiativeRef(val["parent"]) 
         if val.get("state") :
                 if debug:
                         print "getting state"
 		if object_type == "Initiative":
-			print "init state : %s" % rally.getState('Initiative', val["state"])
 			val["state"] = rally.getState('Initiative', val["state"]).ref
 		if object_type == "Feature":
-                        print "feature state : %s" % rally.getState('Feature', val["state"])
 			val["state"] = rally.getState('Feature', val["state"]).ref
                 if object_type == "Theme":
-                        print "theme state : %s" % rally.getState('Theme', val["state"])
                         val["state"] = rally.getState('Theme', val["state"]).ref
 
 
-#clean out null values
+"""
+We need to clear out none/nulls from the json output.
+"""
 def scrub(x):
     # Converts None to empty string
     ret = copy.deepcopy(x)
@@ -436,64 +396,89 @@ def scrub(x):
     if x is None:
         ret = ''
     # Finished scrubbing
+    # Scrub out listing_order from dataset
     return ret
 
+"""
+Empty keys cause a problem with Rally, so let's clean them out.
+"""
 def remove_empty_keys(x):
 	empty_keys = [k for k,v in x.iteritems() if not v]
 	for k in empty_keys:
     		del x[k]
+	#this was added in to make user story numbers (and other objects) import in a specific order.
+	if 'listing_order' in x:
+		del x['listing_order']
 
+def main(args):
+	global rally
+	global server_name
+	global debug
+	login_name = ""
+	
+	#Parse Command line options
+        parser = argparse.ArgumentParser("create_data")
+        parser.add_argument("server", help="Server options = sales, integrations or partner", type=str)
+        parser.add_argument("workspace_name", help="Name of the workspace to update")
+        args = parser.parse_args()
+	login_name = "thomas.mcquitty@acme.com"
 
-# Get Release Information
-#iterate through list
-#get projectref
-#update json for dates?
-# Get a list of items (releases)
+        print "server name is %s" % args.server
+        print "workspace name is %s" % args.workspace_name
+	workspace_name = args.workspace_name
+	server_name = args.server
 
-objects = collections.OrderedDict()
-objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
-#objects = ["Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
-#objects = {"Release", "Initiave", "Theme"}
-#objects = {"Story"}
+        valid_servers = ["integrations", "sales", "partners"]
+	if server_name.lower() not in valid_servers:
+		print "You have selected an invalid server.  Please use a valid option."
+		sys.exit(1)
+	
+	if server_name == "integrations" or server_name == "partners":
+		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
-for item_type in objects:
-	item_text = "%s" % item_type
-	query_text = "select * from " + item_text + ";"
-	print query_text 
-	my_query = query_db(query_text)
-	#process each item.  We will have to do substitution for values that are references in the data, like projects and user names
-	for item in my_query:
-		item = scrub(item)
-		# remove empty keys, as it causes a problem
-		replace_values(item, item_text)
-		remove_empty_keys(item)  #test... moving replace values above here instead of below.  Need to populate project on task from story.
+	rally = Rally('rally1.rallydev.com', login_name, 'Kanban!!', workspace=workspace_name, project='Online Store')
+	rally.enableLogging('output.log')
 
-		#replace_values(item, item_text)
-		output = json.dumps(item, default = myconverter)
-		output = json.loads(output)
-		try:
-			print "executing load"
-			#print output
-			print "creating object " + item_text + "\n\n"
-			record = rally.create(item_text, output)
-			pprint(record)
-			debug = 1
-			if (item_text == "Story") or (item_text == "Defect") or (item_text == "TestSet") or (item_text == "TestCase"):
+	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
+
+	for item_type in objects:
+		item_text = "%s" % item_type
+		print "Processing " + item_text + "..."
+		query_text = "select * from " + item_text + " order by listing_order asc;"
+		my_query = query_db(query_text)
+		#process each item.  We will have to do substitution for values that are references in the data, like projects and user names
+		for item in my_query:
+			item = scrub(item)
+			replace_values(item, item_text)	
+			remove_empty_keys(item)  	#remove empty keys, they cause an issue when loading and Rally expects a value.
+			output = json.dumps(item, default = myconverter)
+			output = json.loads(output)
+			try:
 				if debug:
-					print "Debugging???"
-					print "Name %s story ref %s Project %s " % (record.Name, record.ref, record.Project.ref)
-				story_project_ref[record.Name] = record.Project.ref
-				story_ref[record.Name] = record.ref
-			# Build array of feature, themes and initiatives added to the workspace
-			if(item_text == "Theme") or (item_text == "Initiative") or (item_text == "Feature"):
-				if debug:
-					print "adding to theme list"
-					print "Name %s portfolio ref %s" % (record.Name, record.ref)
-				portfolio_item_ref[record.Name] = record.ref
-		except Exception, details:
-			sys.stderr.write("error creating %s\n\n" % item_text)
-			sys.stderr.write("ERROR: %s \n" % details)
-			sys.exit(1)
-		debug = 0
-sys.exit(1)
+					print output
+					print "creating object " + item_text + "\n\n"
+				record = rally.create(item_text, output)
+				#pprint(record)
+				debug = 0
+				#build array of stories, defects, testsets and test cases for quick reference
+				if (item_text == "Story") or (item_text == "Defect") or (item_text == "TestSet") or (item_text == "TestCase"):
+					if debug:
+						print "Debugging???"
+						print "Name %s story ref %s Project %s " % (record.Name, record.ref, record.Project.ref)
+					story_project_ref[record.Name] = record.Project.ref
+					story_ref[record.Name] = record.ref
+				# Build array of feature, themes and initiatives added to the workspace
+				if(item_text == "Theme") or (item_text == "Initiative") or (item_text == "Feature"):
+					if debug:
+						print "adding to theme list"
+						print "Name %s portfolio ref %s" % (record.Name, record.ref)
+					portfolio_item_ref[record.Name] = record.ref
+			except Exception, details:
+				sys.stderr.write("error creating %s\n\n" % item_text)
+				sys.stderr.write("ERROR: %s \n" % details)
+				sys.exit(1)
+			debug = 0
 
+if __name__ == '__main__':
+        main(sys.argv[1:])
+        sys.exit(0)

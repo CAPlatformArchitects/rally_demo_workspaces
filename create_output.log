@@ -1,0 +1,5 @@
+2017-09-21 09:56:04.766 Following entries record Rally REST API interaction via https://rally1.rallydev.com/slm/webservice/v2.0 for user: thomas.mcquitty@acme.com
+2017-09-21 09:56:04.767 GET HierarchicalRequirement?fetch=false&query=(ScheduleState = Defined)&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-09-21 09:56:04.878 200 HierarchicalRequirement?fetch=false&query=(ScheduleState%20%3D%20Defined)&workspace=workspace/142931330116&project=project TotalResultCount 0
+2017-09-21 09:56:04.878 GET HierarchicalRequirement?fetch=false&query=((ScheduleState = "Completed") and (Ready = "True"))&workspace=workspace/142931330116&project=project/142931330452&projectScopeUp=false&projectScopeDown=false&pagesize=500&start=1
+2017-09-21 09:56:04.983 200 HierarchicalRequirement?fetch=false&query=((ScheduleState%20=%20"Completed")%20and%20(Ready%20=%20"True"))&workspace=workspace/142931330116&project=project TotalResultCount 0
