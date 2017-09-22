@@ -61,7 +61,7 @@ def get_workspaceID(name):
         global debug
         debug = 0
         print "Searhcing for workspace %s " % name
-        if (workspace_exists(name)):
+        if (workspace_name_exists(name)):
                 workspaces = rally.getWorkspaces()
                 for wksp in workspaces:
                         if wksp.Name == name:
@@ -199,7 +199,7 @@ def getStoriesStateDefined():
 		if ws_name_match(name):
 			print "Matched %s" % name
 			error = False
-			if workspace_exists(name):
+			if workspace_name_exists(name):
 				error = True
 				error_reason = "A workspace named " + name + " already exists.  Please rename story and try again."
 			else:
