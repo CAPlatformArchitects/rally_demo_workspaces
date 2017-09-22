@@ -71,8 +71,18 @@ def get_workspaceID(name):
         print "did not find workspace"
         return 0
 
+def getWorkspaceNameByOID(objID):
+	global rally
+	global debug
+	workspaces = rally.getWorkspaces()
+	for wksp in workspaces:
+			if wksp.ObjectID == objID:
+				return wksp.Name
+			
+	print "Workspace ObjectID not found"
+	return False
 
-def workspace_exists(name):
+def workspace_name_exists(name):
 	global rally
 	global debug
 	debug = 0
@@ -115,9 +125,18 @@ def archive_workspace():
             for story in collection:
 		#print story.details()
                 name = '%s' % story.Name
+				objectID = story.objectID
 		print "Story ID %s %s" % (story.FormattedID, name)
 		print "Archiving Workspace %s" % name
-		if(workspace_exists(name)):
+		print "Archiving Workspace Object %s" % story.ObjectID
+		# This has to be done as the ruby scripts expect a human friendly name.
+		# People are renaming their workspaces, so this means we need to reference the OID if it exists.
+		# Otherwise the workspace will not be found.
+		if(story.Workspace_OID > 0):
+			actual_name = getWorkspaceNameByOID(Workspace_OID)
+		else:
+			actual_name = name
+		if(workspace_name_exists(actual_name)):
 			archive_command = 'ruby -W0 /home/thomas/demo_env_ex2ra/bin/workspace_archive -s ' + server_name + ' -n "' + name + '"'
 			print archive_command
 			return_code = 0
