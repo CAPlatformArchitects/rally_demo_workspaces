@@ -125,15 +125,17 @@ def archive_workspace():
             for story in collection:
 		#print story.details()
                 name = '%s' % story.Name
-				objectID = story.objectID
+		objectID = story.ObjectID
 		print "Story ID %s %s" % (story.FormattedID, name)
 		print "Archiving Workspace %s" % name
 		print "Archiving Workspace Object %s" % story.ObjectID
+		#print story.details()
+		print "Workspace OID : %s" % story.WorkspaceOID
 		# This has to be done as the ruby scripts expect a human friendly name.
 		# People are renaming their workspaces, so this means we need to reference the OID if it exists.
 		# Otherwise the workspace will not be found.
-		if(story.Workspace_OID > 0):
-			actual_name = getWorkspaceNameByOID(Workspace_OID)
+		if(story.WorkspaceOID > 0):
+			actual_name = getWorkspaceNameByOID(story.WorkspaceOID)
 		else:
 			actual_name = name
 		if(workspace_name_exists(actual_name)):
