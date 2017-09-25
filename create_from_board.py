@@ -28,8 +28,33 @@ from ConfigParser import SafeConfigParser
 global rally
 global pidfile
 global server_name
+global rally_server
 global debug
+global user_name
+global password
+global workspace
+global project
 global workspace_names
+
+def login():
+	global rally
+	global server_name
+	global debug
+	global user_name
+	global password
+	global workspace
+	global project
+	global workspace_names
+	global rally_server
+
+        try:
+                rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
+        except Exception, details:
+                print ("Error logging in")
+                close_pid()
+                sys.exit(1)
+
+
 
 def close_pid():
 	os.unlink(pidfile)
@@ -239,6 +264,10 @@ def getStoriesStateDefined():
 				print "command completed"
 				if return_code:
 					print "error occurred, skipping this record"
+				###
+				### After creating the workspace, we need to get the new workspace OID.  This script needs to login again to capture that, as the workspace doesn't show up in the list unless you login again.
+				###
+				login()
 				workspace_objectID = get_workspaceID(name)
 
 			if error:
@@ -260,6 +289,12 @@ def main(args):
 	global server_name
 	global debug
 	debug = 1
+	global user_name
+	global password
+	global workspace
+	global project
+	global rally_server
+
         #Parse Command line options
         parser = argparse.ArgumentParser("create_data")
         parser.add_argument("server", help="Server options = sales, integrations or partner", type=str)
@@ -284,14 +319,7 @@ def main(args):
 	if debug:
 		print "username is now " + user_name
 
-        #server, user, password, apikey, workspace, project = rallyWorkset(options)
-        try:
-		rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
-        except Exception, details:
-		print ("Error logging in")
-		close_pid()
-		sys.exit(1)
-
+	login()
 
 	rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"

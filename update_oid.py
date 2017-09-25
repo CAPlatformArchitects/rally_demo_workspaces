@@ -11,6 +11,7 @@ import argparse
 from subprocess import call
 import re
 import traceback
+from ConfigParser import SafeConfigParser
 
 ## get list of stories in Defined State
 ## if story found, execute workspace creation scripts
@@ -129,11 +130,17 @@ def main(args):
         parser.add_argument("server", help="Server options = sales, integrations or partner", type=str)
         args = parser.parse_args()
 	server_name = args.server.lower()
-
 	create_pid()
+	config = SafeConfigParser()
+	config.read('config.ini')
+	user_name 	= config.get('main','username')
+	password 	= config.get('main','password')
+	workspace	= config.get('main','workspace')
+	project		= config.get('main','project')
+	rally_server	= config.get('main','server')
+	
 
         print "server name is %s" % args.server
-	
 	user_name = "thomas.mcquitty@acme.com"
 	if (server_name != "sales"):
 		user_name = user_name.replace("@acme", "@" + server_name + ".acme")
@@ -142,7 +149,7 @@ def main(args):
 
         #server, user, password, apikey, workspace, project = rallyWorkset(options)
         try:
-		rally = Rally('rally1.rallydev.com', user_name, 'Kanban!!', workspace="Workspace Requests", project='Requests')
+		rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
         except Exception, details:
 		print ("Error logging in")
 		close_pid()
