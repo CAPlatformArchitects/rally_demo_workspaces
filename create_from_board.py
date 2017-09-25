@@ -60,13 +60,13 @@ def get_workspaceID(name):
         global rally
         global debug
         debug = 0
-        print "Searhcing for workspace %s " % name
-        if (workspace_name_exists(name)):
-                workspaces = rally.getWorkspaces()
-                for wksp in workspaces:
-                        if wksp.Name == name:
-                                print "found workspace " + wksp.ObjectID
-                                return wksp.ObjectID
+        print "GetWorksspaceID: Searching for workspace %s " % name
+        workspaces = rally.getWorkspaces()
+        for wksp in workspaces:
+       		print wksp.Name
+                if wksp.Name == name:
+                      print "found workspace " + wksp.ObjectID
+                      return wksp.ObjectID
 
         print "did not find workspace"
         return 0
@@ -75,10 +75,14 @@ def getWorkspaceNameByOID(objID):
 	global rally
 	global debug
 	workspaces = rally.getWorkspaces()
+	print "getWorkspaceNameByOID"
+	print objID
 	for wksp in workspaces:
 			if wksp.ObjectID == objID:
+				print "Found ObjectID"
+				print "searching for " + objID
+				print wksp.ObjectID
 				return wksp.Name
-			
 	print "Workspace ObjectID not found"
 	return False
 
@@ -209,6 +213,8 @@ def getStoriesStateDefined():
 				print import_command
 				return_code = 0
 				print "Creating workspace"
+				task_update = {'FormattedID' : story.FormattedID, 'Notes' : 'Creating workspace... please stand by', "DisplayColor" : "#fff200"}
+				result = rally.post('Story', task_update)
 				return_code = call(import_command, shell=True)
 				if return_code:
 					print "Error creating workspace"
@@ -216,7 +222,7 @@ def getStoriesStateDefined():
 					error_reason = "Error creating workspace.  Contact the Platform Architects for more assistance."
 				print "command completed"
 				print load_data_command	
-				print "loading data"
+				print "loading data - Changing color"
 				return_code = call(load_data_command, shell=True)
 				if return_code:
 					print "error loading data"
@@ -238,7 +244,7 @@ def getStoriesStateDefined():
 			if error:
 				task_update = {'FormattedID' : story.FormattedID, 'Notes' : error_reason, "DisplayColor" : "#ff0000", "Workspace_OID" : workspace_objectID}
 			else:
-				task_update = {'ScheduleState' : 'In-Progress', 'FormattedID' : story.FormattedID, "Notes" : "Workspace Created", "DisplayColor" : "#000000", "Workspace_OID" : workspace_objectID }
+				task_update = {'ScheduleState' : 'In-Progress', 'FormattedID' : story.FormattedID, "Notes" : "Workspace Created", "DisplayColor" : "#3fa016", "Workspace_OID" : workspace_objectID }
 
 			print task_update
 			result = rally.post('Story',task_update)
