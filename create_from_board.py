@@ -35,6 +35,7 @@ global password
 global workspace
 global project
 global workspace_names
+global api_key
 
 def login():
 	global rally
@@ -46,9 +47,36 @@ def login():
 	global project
 	global workspace_names
 	global rally_server
+	global api_key
+
+	user_name 	= ""
+	password 	= ""
+	workspace 	= ""
+	project 	= ""
+	api_key 	= ""
+	rally_server 	= ""
+	config = SafeConfigParser()
+        config.read('config.ini')
+        if config.has_option(server_name,'username'):
+		user_name       = config.get(server_name,'username')
+        if config.has_option(server_name,'password'):
+		password        = config.get(server_name,'password')
+        if config.has_option(server_name,'workspace'):
+	        workspace       = config.get(server_name,'workspace')
+        if config.has_option(server_name,'project'):
+		project         = config.get(server_name,'project')
+        if config.has_option(server_name,'api_key'):
+                api_key 	= config.get(server_name,'api_key')
+        if config.has_option(server_name,'server'):
+		rally_server    = config.get(server_name,'server')
 
         try:
-                rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
+                if api_key == "":
+			print "Login/password connection"
+			rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
+		if api_key != "":
+			print "API connection"
+			rally = Rally(rally_server, apikey=api_key, workspace=workspace, project=project)
         except Exception, details:
                 print ("Error logging in")
                 close_pid()
@@ -294,32 +322,22 @@ def main(args):
 	global workspace
 	global project
 	global rally_server
+	global api_key
 
+	api_key = ""
         #Parse Command line options
         parser = argparse.ArgumentParser("create_data")
         parser.add_argument("server", help="Server options = sales, integrations or partner", type=str)
         args = parser.parse_args()
 	server_name = args.server.lower()
 	create_pid()
-	config = SafeConfigParser()
-	config.read('config.ini')
-	user_name 	= config.get('main','username')
-	password 	= config.get('main','password')
-	workspace 	= config.get('main','workspace')
-	project		= config.get('main','project')
-	rally_server		= config.get('main','server')
-
-	print user_name, password, workspace, project, rally_server
-
         print "server name is %s" % server_name
-	
+	login()	
 	#user_name = "thomas.mcquitty@acme.com"
 	if (server_name != "sales"):
 		user_name = user_name.replace("@acme", "@" + server_name + ".acme")
 	if debug:
 		print "username is now " + user_name
-
-	login()
 
 	rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"
