@@ -3,7 +3,6 @@ import sys
 import datetime
 import psycopg2
 import json
-import openpyxl
 import collections
 from pprint import pprint
 from pyral import Rally, rallyWorkset
