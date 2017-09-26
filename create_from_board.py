@@ -12,6 +12,8 @@ from subprocess import call
 import re
 import traceback
 from ConfigParser import SafeConfigParser
+import smptlib
+from email.mime.text import MIMEText
 
 ## get list of stories in Defined State
 ## if story found, execute workspace creation scripts
