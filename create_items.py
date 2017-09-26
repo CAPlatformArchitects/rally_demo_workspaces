@@ -421,18 +421,20 @@ def main(args):
         parser.add_argument("--server", "-s", "--server", required=True, help="Server options = sales, integrations or partner", type=str)
         parser.add_argument("--workspace_name", "-n", "--name", required=True, help="Name of the workspace to update")
         args = parser.parse_args()
+        workspace_name = args.workspace_name
+        server_name = args.server
+
+
 	config = SafeConfigParser()
 	config.read('config.ini')
-	rally_server 	= config.get('main','server')
-	login_name 	= config.get('main','username')
-	password	= config.get('main','password')
+	rally_server 	= config.get(server_name,'server')
+	login_name 	= config.get(server_name,'username')
+	password	= config.get(server_name,'password')
 
 	#login_name = "thomas.mcquitty@acme.com"
 
         print "server name is %s" % args.server
         print "workspace name is %s" % args.workspace_name
-	workspace_name = args.workspace_name
-	server_name = args.server
 
         valid_servers = ["integrations", "sales", "partners"]
 	if server_name.lower() not in valid_servers:
