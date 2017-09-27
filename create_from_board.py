@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 import sys
 import datetime
 import json
@@ -38,6 +38,7 @@ global workspace
 global project
 global workspace_names
 global api_key
+global exe_path
 
 def login():
 	global rally
@@ -50,6 +51,7 @@ def login():
 	global workspace_names
 	global rally_server
 	global api_key
+	global exe_path
 
 	user_name 	= ""
 	password 	= ""
@@ -71,6 +73,8 @@ def login():
                 api_key 	= config.get(server_name,'api_key')
         if config.has_option(server_name,'server'):
 		rally_server    = config.get(server_name,'server')
+	if config.has_option('config','directory'):
+		exe_path 	= config.get('config','directory')
 
         try:
                 if api_key == "":
@@ -173,6 +177,8 @@ def isThisLastUser(objectID):
 def archive_workspace():
 	global rally
 	global server_name
+	global exe_path
+
 	error = False
 	response = ""
 	actual_name = ""
@@ -198,7 +204,7 @@ def archive_workspace():
 		else:
 			actual_name = name
 		if(workspace_name_exists(actual_name)):
-			archive_command = 'ruby -W0 /home/thomas/demo_env_ex2ra/bin/workspace_archive -s ' + server_name + ' -n "' + name + '"'
+			archive_command = 'ruby -W0 ' + exe_path +  '/demo_env_ex2ra/bin/workspace_archive -s ' + server_name + ' -n "' + name + '"'
 			print archive_command
 			return_code = 0
 	                return_code = call(archive_command, shell=True)
@@ -228,6 +234,7 @@ def archive_workspace():
 def getStoriesStateDefined():
 	global rally
 	global server_name
+	global exe_path
 
 	workspace_objectID = 0
 	error = False
@@ -262,9 +269,9 @@ def getStoriesStateDefined():
 				error = True
 				error_reason = "A workspace named " + name + " already exists.  Please rename story and try again."
 			else:
-				import_command = 'ruby -W0 /home/thomas/demo_env_ex2ra/bin/import_setup -s ' + server_name + ' -u ' + email_address + ' -n "' + name + '"'
-				data_setup_command = 'ruby -W0 /home/thomas/demo_env_ex2ra/bin/data_setup -s ' + server_name + ' -n "' + name + '"'
-				load_data_command = '/home/thomas/rally_python_tests/create_items.py -s ' + server_name + ' -n "' + name + '"'
+				import_command 		= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/import_setup -s ' + server_name + ' -u ' + email_address + ' -n "' + name + '"'
+				data_setup_command 	= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/data_setup -s ' + server_name + ' -n "' + name + '"'
+				load_data_command 	= exe_path + '/rally_python_tests/create_items.py -s ' + server_name + ' -n "' + name + '"'
 				print import_command
 				return_code = 0
 				print "Creating workspace"
@@ -341,7 +348,7 @@ def main(args):
 	if debug:
 		print "username is now " + user_name
 
-	rally.enableLogging('create_output.log')
+	#rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"
         archive_workspace()
 	#updates the stories in the defined state

@@ -3,7 +3,6 @@ import sys
 import datetime
 import psycopg2
 import json
-import openpyxl
 import collections
 from pprint import pprint
 from pyral import Rally, rallyWorkset
@@ -11,6 +10,7 @@ import copy
 import os
 import argparse
 from ConfigParser import SafeConfigParser
+import traceback
 global rally
 global server_name
 
@@ -68,11 +68,11 @@ def getUserRef(user_name):
 def getProjectRef(project_name):
     global rally
     global project_names
-    
+
     if debug:
         print("Items:\n")
         print(project_names.items())
-    
+
     #let's build a list of project names and reference ids, so we don't have to query the system each time.
     if project_name in project_names:
         if debug:
@@ -87,7 +87,7 @@ def getProjectRef(project_name):
 	except Exception, details:
 	        sys.stderr.write("ERROR: %s \n" % details)
        		sys.exit(1)
-		
+
     return value
 
 def getIterationRef(piName):
@@ -421,29 +421,48 @@ def main(args):
         parser.add_argument("--server", "-s", "--server", required=True, help="Server options = sales, integrations or partner", type=str)
         parser.add_argument("--workspace_name", "-n", "--name", required=True, help="Name of the workspace to update")
         args = parser.parse_args()
+        workspace_name = args.workspace_name
+        server_name = args.server
+
+
 	config = SafeConfigParser()
 	config.read('config.ini')
-	rally_server 	= config.get('main','server')
-	login_name 	= config.get('main','username')
-	password	= config.get('main','password')
+	if config.has_option(server_name,'server'):
+		rally_server 	= config.get(server_name,'server')
+	if config.has_option(server_name,'username'):
+		login_name 	= config.get(server_name,'username')
+	if config.has_option(server_name,'password'):
+		password	= config.get(server_name,'password')
+	if config.has_option(server_name,'api_key'):
+		api_key		= config.get(server_name,'api_key')
 
+	print api_key + login_name + password + rally_server + server_name
 	#login_name = "thomas.mcquitty@acme.com"
 
         print "server name is %s" % args.server
         print "workspace name is %s" % args.workspace_name
-	workspace_name = args.workspace_name
-	server_name = args.server
 
         valid_servers = ["integrations", "sales", "partners"]
 	if server_name.lower() not in valid_servers:
 		print "You have selected an invalid server.  Please use a valid option."
 		sys.exit(1)
-	
+
 	if server_name == "integrations" or server_name == "partners":
 		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
+	try:
+		if api_key == "":
+			print "Login/password connection"
+			rally = Rally(rally_server, login_name, password, workspace=workspace_name, project='Online Store')
+		if api_key != "":
+			print "Api connection"
+			rally = Rally(rally_server, apikey=api_key, workspace=workspace_name, project='Online Store')
+        except Exception, details:
+		print traceback.print_exc()
+		print "details %s " % details
+                print ("Error logging in")
+                sys.exit(1)
 
-	rally = Rally(rally_server, login_name, password, workspace=workspace_name, project='Online Store')
-	rally.enableLogging('output.log')
+	#rally.enableLogging('output.log')
 
 	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
 

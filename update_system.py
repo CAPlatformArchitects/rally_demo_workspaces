@@ -96,7 +96,7 @@ def main(args):
 
 	rally = Rally('rally1.rallydev.com', login_name, 'Kanban!!', workspace=requests_workspace, project=requests_project)
 	print "logged in"
-	rally.enableLogging('output.log')
+	#rally.enableLogging('output.log')
 
 	## We need to get the workspaces that have update_data flag set.
 	## These are set in the user story that creates the workspace
