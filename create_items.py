@@ -444,7 +444,7 @@ def main(args):
 		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
 	rally = Rally(rally_server, login_name, password, workspace=workspace_name, project='Online Store')
-	rally.enableLogging('output.log')
+	#rally.enableLogging('output.log')
 
 	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
 

@@ -346,7 +346,7 @@ def main(args):
 	if debug:
 		print "username is now " + user_name
 
-	rally.enableLogging('create_output.log')
+	#rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"
         archive_workspace()
 	#updates the stories in the defined state
