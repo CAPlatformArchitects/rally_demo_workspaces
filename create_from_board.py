@@ -39,6 +39,56 @@ global project
 global workspace_names
 global api_key
 global exe_path
+global email_server
+global email_from
+global email_password
+global email_to
+global email_enabled
+
+def read_config():
+        global rally
+        global server_name
+        global debug
+        global user_name
+        global password
+        global workspace
+        global project
+        global workspace_names
+        global rally_server
+        global api_key
+        global exe_path
+        global email_server
+        global email_from
+        global email_password
+        global email_to
+	global email_enabled
+
+        config = SafeConfigParser()
+        config.read('config.ini')
+        if config.has_option(server_name,'username'):
+                user_name       = config.get(server_name,'username')
+        if config.has_option(server_name,'password'):
+                password        = config.get(server_name,'password')
+        if config.has_option(server_name,'workspace'):
+                workspace       = config.get(server_name,'workspace')
+        if config.has_option(server_name,'project'):
+                project         = config.get(server_name,'project')
+        if config.has_option(server_name,'api_key'):
+                api_key         = config.get(server_name,'api_key')
+        if config.has_option(server_name,'server'):
+                rally_server    = config.get(server_name,'server')
+        if config.has_option('config','directory'):
+                exe_path        = config.get('config','directory')
+       if config.has_option('config','email_enabled'):
+                email_enabled   = config.get('config','email_enabled')
+       		if config.has_option('config','email_server'):
+                	email_server	= config.get('config','email_server')
+	       	if config.has_option('config','email_from'):
+        	        email_from      = config.get('config','email_from')
+	       	if config.has_option('config','email_pass'):
+        	        email_pass      = config.get('config','email_pass')
+	       	if config.has_option('config','email_to'):
+        	        email_to        = config.get('config','email_to')
 
 def login():
 	global rally
@@ -59,22 +109,6 @@ def login():
 	project 	= ""
 	api_key 	= ""
 	rally_server 	= ""
-	config = SafeConfigParser()
-        config.read('config.ini')
-        if config.has_option(server_name,'username'):
-		user_name       = config.get(server_name,'username')
-        if config.has_option(server_name,'password'):
-		password        = config.get(server_name,'password')
-        if config.has_option(server_name,'workspace'):
-	        workspace       = config.get(server_name,'workspace')
-        if config.has_option(server_name,'project'):
-		project         = config.get(server_name,'project')
-        if config.has_option(server_name,'api_key'):
-                api_key 	= config.get(server_name,'api_key')
-        if config.has_option(server_name,'server'):
-		rally_server    = config.get(server_name,'server')
-	if config.has_option('config','directory'):
-		exe_path 	= config.get('config','directory')
 
         try:
                 if api_key == "":
@@ -321,6 +355,28 @@ def getStoriesStateDefined():
 			result = rally.post('Story', task_update)
 	return
 
+def send_email_error(error_msg):
+	## TODO: Add Error Checking
+	global email_server
+	global email_from
+	global email_password
+	global email_to
+	global email_enabled
+
+	if email_enabled != "true" or email_enabled == "":
+		return
+
+	msg = MIMEText(error_msg)
+	msg['Subject'] 	= "Error processing Workspace"
+	msg['From'] 	= email_from
+	msg['To']	= email_to
+
+	s = smtplib.SMTP(host = email_server)
+	s.starttls()
+	s.login(email_from, email_to, msg.as_string())
+	s.quit()
+
+
 def main(args):
 	global rally
 	global server_name
@@ -342,11 +398,6 @@ def main(args):
 	create_pid()
         print "server name is %s" % server_name
 	login()	
-	#user_name = "thomas.mcquitty@acme.com"
-	if (server_name != "sales"):
-		user_name = user_name.replace("@acme", "@" + server_name + ".acme")
-	if debug:
-		print "username is now " + user_name
 
 	#rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"
@@ -365,5 +416,6 @@ if __name__ == '__main__':
 		close_pid()
 		print "Details of error %s" % details
 		print "Exception occurred... cleaning up."
+		send_email_error(details)
 		sys.exit(1)
         sys.exit(0)
