@@ -288,6 +288,7 @@ def getStoriesStateDefined():
 	global rally
 	global server_name
 	global exe_path
+	global user_name
 
 	workspace_objectID = 0
 	error = False
@@ -307,10 +308,7 @@ def getStoriesStateDefined():
 		#print "story owner: %s " % owner
 		if owner == None:
 			print "So owner defined, setting default"
-			if (server_name != "sales"):
-				email_address = "thomas.mcquitty@" + server_name + ".acme.com"
-			else:
-				email_address = "thomas.mcquitty@acme.com"
+			email_address = user_name
 		else:
 			print "Setting owner to " + story.Owner.UserName
 			email_address = story.Owner.UserName
