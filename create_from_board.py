@@ -14,6 +14,7 @@ import traceback
 from ConfigParser import SafeConfigParser
 import smtplib
 from email.mime.text import MIMEText
+import time
 
 ## get list of stories in Defined State
 ## if story found, execute workspace creation scripts
@@ -420,6 +421,9 @@ def main(args):
         args = parser.parse_args()
 	server_name = args.server.lower()
 	create_pid()
+	ts = time.time()
+	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	print "Starting Processing at : " + st
         print "server name is %s" % server_name
 	login()	
 
