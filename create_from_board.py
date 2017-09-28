@@ -397,7 +397,7 @@ def send_email_error(error_msg):
 	s = smtplib.SMTP_SSL(host = email_server)
 	#s.starttls()
 	s.login(email_from, email_password)
-	s.set_debuglevel(1)
+	s.set_debuglevel(0)
 	s.sendmail(email_from, email_to, msg.as_string())
 	s.quit()
 
