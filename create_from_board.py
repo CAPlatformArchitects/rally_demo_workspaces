@@ -12,7 +12,7 @@ from subprocess import call
 import re
 import traceback
 from ConfigParser import SafeConfigParser
-import smptlib
+import smtplib
 from email.mime.text import MIMEText
 
 ## get list of stories in Defined State
@@ -22,8 +22,8 @@ from email.mime.text import MIMEText
 ## get list of workspaces in completed state
 ## archive workspace and move to accepted
 
-#TODO Set color when starting a creation of workspace.
-#TODO Set the archive so it will archive based upon ObjectID, not by name.
+#DONE Set color when starting a creation of workspace.
+#DONE Set the archive so it will archive based upon ObjectID, not by name.
 #TODO If the name is wrong, update the user story
 #TODO Email if there's an error
 
@@ -63,6 +63,11 @@ def read_config():
         global email_to
 	global email_enabled
 
+	email_enabled 	= ""
+	email_from 	= ""
+	email_to	= ""
+	email_password	= ""
+	email_server	= ""
         config = SafeConfigParser()
         config.read('config.ini')
         if config.has_option(server_name,'username'):
@@ -79,14 +84,14 @@ def read_config():
                 rally_server    = config.get(server_name,'server')
         if config.has_option('config','directory'):
                 exe_path        = config.get('config','directory')
-       if config.has_option('config','email_enabled'):
+        if config.has_option('config','email_enabled'):
                 email_enabled   = config.get('config','email_enabled')
        		if config.has_option('config','email_server'):
                 	email_server	= config.get('config','email_server')
 	       	if config.has_option('config','email_from'):
         	        email_from      = config.get('config','email_from')
 	       	if config.has_option('config','email_pass'):
-        	        email_pass      = config.get('config','email_pass')
+        	        email_password  = config.get('config','email_pass')
 	       	if config.has_option('config','email_to'):
         	        email_to        = config.get('config','email_to')
 
@@ -109,6 +114,8 @@ def login():
 	project 	= ""
 	api_key 	= ""
 	rally_server 	= ""
+	
+	read_config()
 
         try:
                 if api_key == "":
@@ -119,10 +126,9 @@ def login():
 			rally = Rally(rally_server, apikey=api_key, workspace=workspace, project=project)
         except Exception, details:
                 print ("Error logging in")
+		send_email_error("Error logging in")
                 close_pid()
                 sys.exit(1)
-
-
 
 def close_pid():
 	os.unlink(pidfile)
@@ -204,7 +210,7 @@ def isThisLastUser(objectID):
 			print item.details()
 			pprint(item)
 	if collection.errors:
-		print "error"
+		print "Error checking last user"
 	return
 
 ### Add in check to ensure only the owner or admins are archiving stories
@@ -248,6 +254,8 @@ def archive_workspace():
 				print "error occurred"
 				error_message = "A possible error occurred while archiving.  Check to see if the workspace still exists, in not, please contact the Platform Architects."
 				task_update = {"FormattedID" : story.FormattedID, "Notes" : error_message, "ScheduleState" : "Completed", "DisplayColor" : "#ff0000"}
+				email_msg = "Error while archiving %" % story.FormattedID
+				send_email_error(email_msg)
 			else:
 			        task_update = {'FormattedID' : story.FormattedID, 'ScheduleState' : 'Accepted', 'DisplayColor' : '#000000', 'Notes' : 'Archving Workspace' }
 				task_update = json.dumps(task_update)
@@ -259,8 +267,12 @@ def archive_workspace():
 				#Sometimes the system errors out updating... so I am giving it another try
 				task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
 				response = rally.post('Story', task_update)
+				email_msg = "Error updating story for archiving story %s" % story.FormattedID
+				send_email_error(email_msg)
 		else:
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace not found.  Moving to Accepted, due to not being found.  If this is in error, please contact the Platform Architects", "ScheduleState" : "Accepted", "DisplayColor" : "#ff0000" }
+                        email_msg = "Tried to archive missing workspace %s" % story.FormattedID
+			send_email_error(email_msg)
 			print "Task details %s" % task_update
 			result = rally.post('Story', task_update)
 	return
@@ -316,6 +328,8 @@ def getStoriesStateDefined():
 					print "Error creating workspace"
 					error = True
 					error_reason = "Error creating workspace.  Contact the Platform Architects for more assistance."
+					email_msg = "Error creating workspace %s" % story.FormattedID
+                                	send_email_error(email_msg)
 				print "command completed"
 				print load_data_command	
 				print "loading data - Changing color"
@@ -324,6 +338,8 @@ def getStoriesStateDefined():
 					print "error loading data"
 					error = True
 					error_reason = "Workspace data load error.  The workspace exists but may not be usable.  Archive this workspace and attempt again."
+        	                        email_msg = "Error adding workspace data for %s" % story.FormattedID
+	                                send_email_error(email_msg)
 				print "command completed"
 				print import_command
 				print "Creating relationships"
@@ -332,6 +348,8 @@ def getStoriesStateDefined():
 					print "error setting up data"
 					error = True
 					error_reason = "Workspace data was loaded.  Creation of dependencies, discussion items, etc., has failed.  You may want to archive and attempt again."
+        	                        email_msg = "Error adding dependencies to %s" % story.FormattedID
+	                                send_email_error(email_msg)
 				print "command completed"
 				if return_code:
 					print "error occurred, skipping this record"
@@ -363,8 +381,11 @@ def send_email_error(error_msg):
 	global email_to
 	global email_enabled
 
-	if email_enabled != "true" or email_enabled == "":
-		return
+	#if email_enabled != "true" or email_enabled == "":
+	#	return
+
+	print "%s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
+	print error_msg
 
 	msg = MIMEText(error_msg)
 	msg['Subject'] 	= "Error processing Workspace"
@@ -373,7 +394,9 @@ def send_email_error(error_msg):
 
 	s = smtplib.SMTP(host = email_server)
 	s.starttls()
-	s.login(email_from, email_to, msg.as_string())
+	s.login(email_from, email_password)
+	s.set_debuglevel(1)
+	s.sendmail(email_from, email_to, msg.as_string())
 	s.quit()
 
 

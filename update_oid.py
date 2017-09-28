@@ -133,11 +133,11 @@ def main(args):
 	create_pid()
 	config = SafeConfigParser()
 	config.read('config.ini')
-	user_name 	= config.get('main','username')
-	password 	= config.get('main','password')
-	workspace	= config.get('main','workspace')
-	project		= config.get('main','project')
-	rally_server	= config.get('main','server')
+	user_name 	= config.get(server_name,'username')
+	password 	= config.get(server_name,'password')
+	workspace	= config.get(server_name,'workspace')
+	project		= config.get(server_name,'project')
+	rally_server	= config.get(server_name,'server')
 	
 
         print "server name is %s" % args.server
