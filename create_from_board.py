@@ -249,7 +249,7 @@ def archive_workspace():
 			actual_name = name
 		if(workspace_name_exists(actual_name)):
 			try:
-				task_upddate =  {'FormattedID' : story.FormattedID, ', 'DisplayColor' : '#fff200"', 'Notes' : 'The workspace is currently being archived'}
+				task_update =  {'FormattedID' : story.FormattedID, 'DisplayColor' : '#fff200"', 'Notes' : 'The workspace is currently being archived'}
 				response = rally.post('Story', task_update)
 			except Exception, details:
 				print "Unable to update color for workspace archive"
