@@ -95,6 +95,8 @@ def read_config():
 	       	if config.has_option('config','email_to'):
         	        email_to        = config.get('config','email_to')
 
+        print "Email Config : %s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
+
 def login():
 	global rally
 	global server_name
@@ -267,8 +269,6 @@ def archive_workspace():
 				#Sometimes the system errors out updating... so I am giving it another try
 				task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
 				response = rally.post('Story', task_update)
-				email_msg = "Error updating story for archiving story %s" % story.FormattedID
-				send_email_error(email_msg)
 		else:
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace not found.  Moving to Accepted, due to not being found.  If this is in error, please contact the Platform Architects", "ScheduleState" : "Accepted", "DisplayColor" : "#ff0000" }
                         email_msg = "Tried to archive missing workspace %s" % story.FormattedID
@@ -361,6 +361,7 @@ def getStoriesStateDefined():
 
 			if error:
 				task_update = {'FormattedID' : story.FormattedID, 'Notes' : error_reason, "DisplayColor" : "#ff0000", "Workspace_OID" : workspace_objectID}
+				send_email_error("Workspace exists")
 			else:
 				task_update = {'ScheduleState' : 'In-Progress', 'FormattedID' : story.FormattedID, "Notes" : "Workspace Created", "DisplayColor" : "#3fa016", "Workspace_OID" : workspace_objectID }
 
@@ -381,10 +382,10 @@ def send_email_error(error_msg):
 	global email_to
 	global email_enabled
 
-	#if email_enabled != "true" or email_enabled == "":
-	#	return
+	if email_enabled != "true" or email_enabled == "":
+		return
 
-	print "%s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
+	print "Email Config : %s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
 	print error_msg
 
 	msg = MIMEText(error_msg)
@@ -392,8 +393,8 @@ def send_email_error(error_msg):
 	msg['From'] 	= email_from
 	msg['To']	= email_to
 
-	s = smtplib.SMTP(host = email_server)
-	s.starttls()
+	s = smtplib.SMTP_SSL(host = email_server)
+	#s.starttls()
 	s.login(email_from, email_password)
 	s.set_debuglevel(1)
 	s.sendmail(email_from, email_to, msg.as_string())
