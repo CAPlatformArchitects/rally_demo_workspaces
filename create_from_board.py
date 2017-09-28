@@ -96,7 +96,7 @@ def read_config():
 	       	if config.has_option('config','email_to'):
         	        email_to        = config.get('config','email_to')
 
-        print "Email Config : %s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
+        print "Email Config : %s %s %s %s" % (email_server, email_from, email_to, email_enabled)
 
 def login():
 	global rally
