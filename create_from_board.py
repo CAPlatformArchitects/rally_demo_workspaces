@@ -46,6 +46,9 @@ global email_password
 global email_to
 global email_enabled
 
+def UpdatePrelimEstimate():
+	return
+
 def read_config():
         global rally
         global server_name
@@ -171,22 +174,26 @@ def get_workspaceID(name):
                       print "found workspace " + wksp.ObjectID
                       return wksp.ObjectID
 
-        print "did not find workspace"
+        if debug:
+		print "did not find workspace"
         return 0
 
 def getWorkspaceNameByOID(objID):
 	global rally
 	global debug
 	workspaces = rally.getWorkspaces()
-	print "getWorkspaceNameByOID"
-	print objID
+	if debug:
+		print "getWorkspaceNameByOID"
+		print objID
 	for wksp in workspaces:
 			if wksp.ObjectID == objID:
-				print "Found ObjectID"
-				print "searching for " + objID
-				print wksp.ObjectID
+				if debug:
+					print "Found ObjectID"
+					print "searching for " + objID
+					print wksp.ObjectID
 				return wksp.Name
-	print "Workspace ObjectID not found"
+	if debug:
+		print "Workspace ObjectID not found"
 	return False
 
 def workspace_name_exists(name):
@@ -363,8 +370,11 @@ def getStoriesStateDefined():
 				###
 				### After creating the workspace, we need to get the new workspace OID.  This script needs to login again to capture that, as the workspace doesn't show up in the list unless you login again.
 				###
+
+
 				login()
 				workspace_objectID = get_workspaceID(name)
+				UpdatePrelimEstimate()
 
 			if error:
 				task_update = {'FormattedID' : story.FormattedID, 'Notes' : error_reason, "DisplayColor" : "#ff0000", "Workspace_OID" : workspace_objectID}
@@ -412,13 +422,13 @@ def main(args):
 	global rally
 	global server_name
 	global debug
-	debug = 1
 	global user_name
 	global password
 	global workspace
 	global project
 	global rally_server
 	global api_key
+	debug = 1
 
 	api_key = ""
         #Parse Command line options
