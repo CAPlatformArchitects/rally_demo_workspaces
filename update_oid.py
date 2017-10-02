@@ -156,7 +156,7 @@ def main(args):
 		sys.exit(1)
 
 
-	rally.enableLogging('create_output.log')
+	#rally.enableLogging('create_output.log')
 	
 	#updates the stories in the defined state
 	print "Checking for New workspaces"
