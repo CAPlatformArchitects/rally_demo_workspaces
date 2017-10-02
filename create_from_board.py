@@ -96,6 +96,13 @@ def read_config():
         	        email_password  = config.get('config','email_pass')
 	       	if config.has_option('config','email_to'):
         	        email_to        = config.get('config','email_to')
+	if config.has_option('config','debug'):
+			debug_text     = config.get('config','debug')
+			if(debug_text == "true"):
+				debug = 1
+			else
+				debug = 0
+
 	if debug:
         	print "Email Config : %s %s %s %s" % (email_server, email_from, email_to, email_enabled)
 
@@ -162,7 +169,6 @@ def ws_name_match(name):
 def get_workspaceID(name):
         global rally
         global debug
-        debug = 0
         print "GetWorksspaceID: Searching for workspace %s " % name
         workspaces = rally.getWorkspaces()
         for wksp in workspaces:
@@ -192,7 +198,6 @@ def getWorkspaceNameByOID(objID):
 def workspace_name_exists(name):
 	global rally
 	global debug
-	debug = 0
 	workspaces = rally.getWorkspaces()
 	for wksp in workspaces:
 		if debug == 1:
@@ -412,7 +417,6 @@ def main(args):
 	global rally
 	global server_name
 	global debug
-	debug = 1
 	global user_name
 	global password
 	global workspace
