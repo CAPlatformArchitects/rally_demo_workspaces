@@ -440,6 +440,7 @@ def main(args):
 	#rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"
         archive_workspace()
+	login()  ## We do this as the workspace names aren't refreshed automatically.  If we archive a workspace and create a new one with the same name, it will still be "found"
 	#updates the stories in the defined state
 	print "Checking for New workspaces"
 	getStoriesStateDefined()
