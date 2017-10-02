@@ -448,8 +448,6 @@ def main(args):
 		print "You have selected an invalid server.  Please use a valid option."
 		sys.exit(1)
 
-	if server_name == "integrations" or server_name == "partners":
-		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
 	try:
 		if api_key == "":
 			if debug:
