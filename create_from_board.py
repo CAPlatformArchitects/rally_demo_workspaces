@@ -45,6 +45,7 @@ global email_from
 global email_password
 global email_to
 global email_enabled
+global testing_mode
 
 def read_config():
         global rally
@@ -64,6 +65,7 @@ def read_config():
         global email_to
 	global email_enabled
 	global debug
+	global testing_mode
 
 	email_enabled 	= ""
 	email_from 	= ""
@@ -96,6 +98,9 @@ def read_config():
         	        email_password  = config.get('config','email_pass')
 	       	if config.has_option('config','email_to'):
         	        email_to        = config.get('config','email_to')
+        if config.has_option('config','testing_mode'):
+                testing_mode            = config.get('config','testing_mode')
+
 	if debug:
         	print "Email Config : %s %s %s %s" % (email_server, email_from, email_to, email_enabled)
 
@@ -152,7 +157,12 @@ def create_pid():
 	return
 
 def ws_name_match(name):
+	global testing_mode
 	match = False
+
+	if testing_mode == "true"
+		return True;
+
 	if (server_name == "sales"):
 		match = re.match('[a-z]*.*[a-z]@ca.com[-]\d\d\d\d[-]\d\d[-][A-Z][a-z][a-z]', name)
 	else:

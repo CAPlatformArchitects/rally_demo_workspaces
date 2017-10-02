@@ -141,11 +141,7 @@ def main(args):
 	
 
         print "server name is %s" % args.server
-	user_name = "thomas.mcquitty@acme.com"
-	if (server_name != "sales"):
-		user_name = user_name.replace("@acme", "@" + server_name + ".acme")
-	if debug:
-		print "username is now " + user_name
+	print "username is now " + user_name
 
         #server, user, password, apikey, workspace, project = rallyWorkset(options)
         try:
