@@ -414,8 +414,8 @@ def main(args):
 	global rally
 	global server_name
 	global debug
-	login_name = ""
-	
+	login_name 	= ""
+	api_key 	= ""	
 	#Parse Command line options
         parser = argparse.ArgumentParser("create_data")
         parser.add_argument("--server", "-s", "--server", required=True, help="Server options = sales, integrations or partner", type=str)
