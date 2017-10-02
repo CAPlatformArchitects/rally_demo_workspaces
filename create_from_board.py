@@ -130,10 +130,12 @@ def login():
 
         try:
                 if api_key == "":
-			print "Login/password connection"
+			if debug: 
+				print "Login/password connection"
 			rally = Rally(rally_server, user_name, password, workspace=workspace, project=project)
 		if api_key != "":
-			print "API connection"
+			if debug:
+				print "API connection"
 			rally = Rally(rally_server, apikey=api_key, workspace=workspace, project=project)
         except Exception, details:
                 print ("Error logging in")
@@ -169,30 +171,38 @@ def ws_name_match(name):
 def get_workspaceID(name):
         global rally
         global debug
-        print "GetWorksspaceID: Searching for workspace %s " % name
+        if debug:
+		print "GetWorksspaceID: Searching for workspace %s " % name
         workspaces = rally.getWorkspaces()
         for wksp in workspaces:
-       		print wksp.Name
+		if debug:
+	       		print wksp.Name
                 if wksp.Name == name:
-                      print "found workspace " + wksp.ObjectID
-                      return wksp.ObjectID
+			if debug:
+	                      print "found workspace " + wksp.ObjectID
+			return wksp.ObjectID
 
-        print "did not find workspace"
+
+	if debug:
+	        print "did not find workspace"
         return 0
 
 def getWorkspaceNameByOID(objID):
 	global rally
 	global debug
 	workspaces = rally.getWorkspaces()
-	print "getWorkspaceNameByOID"
-	print objID
+	if debug:
+		print "getWorkspaceNameByOID"
+		print objID
 	for wksp in workspaces:
 			if wksp.ObjectID == objID:
-				print "Found ObjectID"
-				print "searching for " + objID
-				print wksp.ObjectID
+				if debug:
+					print "Found ObjectID"
+					print "searching for " + objID
+					print wksp.ObjectID
 				return wksp.Name
-	print "Workspace ObjectID not found"
+	if debug:
+		print "Workspace ObjectID not found"
 	return False
 
 def workspace_name_exists(name):
@@ -206,7 +216,8 @@ def workspace_name_exists(name):
 			if debug:
 				print "Found Workspace"
 			return True
-	print "Workspace not found"
+	if debug:
+		print "Workspace not found"
 	return False
 
 def isThisLastUser(objectID):
@@ -227,6 +238,7 @@ def archive_workspace():
 	global rally
 	global server_name
 	global exe_path
+	global debug
 
 	error = False
 	response = ""
@@ -237,14 +249,13 @@ def archive_workspace():
         assert collection.__class__.__name__ == 'RallyRESTResponse'
         if not collection.errors:
             for story in collection:
-		#print story.details()
                 name = '%s' % story.Name
 		objectID = story.ObjectID
 		print "Story ID %s %s" % (story.FormattedID, name)
 		print "Archiving Workspace %s" % name
-		print "Archiving Workspace Object %s" % story.ObjectID
 		#print story.details()
-		print "Workspace OID : %s" % story.WorkspaceOID
+		if debug:
+			print "Workspace OID : %s" % story.WorkspaceOID
 		# This has to be done as the ruby scripts expect a human friendly name.
 		# People are renaming their workspaces, so this means we need to reference the OID if it exists.
 		# Otherwise the workspace will not be found.
@@ -259,7 +270,8 @@ def archive_workspace():
 			except Exception, details:
 				print "Unable to update color for workspace archive"
 			archive_command = 'ruby -W0 ' + exe_path +  '/demo_env_ex2ra/bin/workspace_archive -s ' + server_name + ' -n "' + name + '"'
-			print archive_command
+			if debug:
+				print archive_command
 			return_code = 0
 	                return_code = call(archive_command, shell=True)
 			if debug:
@@ -273,7 +285,8 @@ def archive_workspace():
 			else:
 			        task_update = {'FormattedID' : story.FormattedID, 'ScheduleState' : 'Accepted', 'DisplayColor' : '#000000', 'Notes' : 'Archving Workspace' }
 				task_update = json.dumps(task_update)
-			print "Updating Story on Kanban Board %s " % task_update
+			if debug:
+				print "Updating Story on Kanban Board %s " % task_update
 	                try:
 				response = rally.post('Story', task_update)
 				print response
@@ -285,7 +298,8 @@ def archive_workspace():
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace not found.  Moving to Accepted, due to not being found.  If this is in error, please contact the Platform Architects", "ScheduleState" : "Accepted", "DisplayColor" : "#ff0000" }
                         email_msg = "Tried to archive missing workspace %s" % story.FormattedID
 			send_email_error(email_msg)
-			print "Task details %s" % task_update
+			if debug:
+				print "Task details %s" % task_update
 			result = rally.post('Story', task_update)
 	return
 
@@ -301,17 +315,13 @@ def getStoriesStateDefined():
 	fields = "Name,Owner,State,FormattedID,oid,ScheduleState,Expedite"
 	criteria = 'ScheduleState = Defined'
 	collection = rally.get('Story', query=criteria)
-	#pprint(list)
 	assert collection.__class__.__name__ == 'RallyRESTResponse'
 	if not collection.errors:
             for story in collection:
-                #print story.details()
 		name = '%s' % story.Name
 		owner = '%s' % story.Owner
-		#	print story.Owner.EmailAddress
-		#print "story owner: %s " % owner
 		if owner == None:
-			print "So owner defined, setting default"
+			print "No owner defined, setting default"
 			if (server_name != "sales"):
 				email_address = "thomas.mcquitty@" + server_name + ".acme.com"
 			else:
@@ -330,7 +340,8 @@ def getStoriesStateDefined():
 				import_command 		= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/import_setup -s ' + server_name + ' -u ' + email_address + ' -n "' + name + '"'
 				data_setup_command 	= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/data_setup -s ' + server_name + ' -n "' + name + '"'
 				load_data_command 	= exe_path + '/rally_python_tests/create_items.py -s ' + server_name + ' -n "' + name + '"'
-				print import_command
+				if debug:
+					print import_command
 				return_code = 0
 				print "Creating workspace"
 				task_update = {'FormattedID' : story.FormattedID, 'Notes' : 'Creating workspace... please stand by', "DisplayColor" : "#fff200"}
@@ -343,7 +354,8 @@ def getStoriesStateDefined():
 					email_msg = "Error creating workspace %s" % story.FormattedID
                                 	send_email_error(email_msg)
 				print "command completed"
-				print load_data_command	
+				if debug:
+					print load_data_command	
 				print "loading data - Changing color"
 				return_code = call(load_data_command, shell=True)
 				if return_code:
@@ -353,7 +365,8 @@ def getStoriesStateDefined():
         	                        email_msg = "Error adding workspace data for %s" % story.FormattedID
 	                                send_email_error(email_msg)
 				print "command completed"
-				print import_command
+				if debug:
+					print import_command
 				print "Creating relationships"
 				return_code = call(data_setup_command, shell=True)
 				if return_code:
@@ -377,11 +390,12 @@ def getStoriesStateDefined():
 			else:
 				task_update = {'ScheduleState' : 'In-Progress', 'FormattedID' : story.FormattedID, "Notes" : "Workspace Created", "DisplayColor" : "#3fa016", "Workspace_OID" : workspace_objectID }
 
-			print task_update
+			if debug:
+				print task_update
 			result = rally.post('Story',task_update)
 
                 else:
-                        print "not matched %s" % name
+                        print "Workspace not matched %s" % name
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace name does not match criteria for creation.  Names should be in the format -- first.last@ca.com-YEAR-MO-Mon as in thomas.mcquitty@ca.com-2017-08-Aug", "DisplayColor" : "#ff0000"}
 			result = rally.post('Story', task_update)
 	return
@@ -393,11 +407,13 @@ def send_email_error(error_msg):
 	global email_password
 	global email_to
 	global email_enabled
+	global debug
 
 	if email_enabled != "true" or email_enabled == "":
 		return
 
-	print "Email Config : %s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
+	if debug:
+		print "Email Config : %s %s %s %s %s" % (email_server, email_from, email_password, email_to, email_enabled)
 	print error_msg
 
 	msg = MIMEText(error_msg)
@@ -408,7 +424,10 @@ def send_email_error(error_msg):
 	s = smtplib.SMTP_SSL(host = email_server)
 	#s.starttls()
 	s.login(email_from, email_password)
-	s.set_debuglevel(0)
+	if debug:
+		s.set_debuglevel(1)
+	else:
+		s.set_debuglevel(0)
 	s.sendmail(email_from, email_to, msg.as_string())
 	s.quit()
 
@@ -434,8 +453,10 @@ def main(args):
 	ts = time.time()
 	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 	print "Starting Processing at : " + st
-        print "server name is %s" % server_name
 	login()	
+
+        if debug:
+                print "server name is %s" % server_name
 
 	#rally.enableLogging('create_output.log')
         print "Checking for workspaces to archive"

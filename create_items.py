@@ -189,7 +189,6 @@ def getReleaseRef(object_value):
 
 def getUserStoryRef(object_value):
     global rally
-    debug = 0
     if debug:
         print "Getting User Story Data"
     #print "Scope is : " + rally.getProject().Name
@@ -435,12 +434,14 @@ def main(args):
 		password	= config.get(server_name,'password')
 	if config.has_option(server_name,'api_key'):
 		api_key		= config.get(server_name,'api_key')
-
-	print api_key + login_name + password + rally_server + server_name
+	
+	
+	#print api_key + login_name + password + rally_server + server_name
 	#login_name = "thomas.mcquitty@acme.com"
 
-        print "server name is %s" % args.server
-        print "workspace name is %s" % args.workspace_name
+        if debug:
+		print "server name is %s" % args.server
+        	print "workspace name is %s" % args.workspace_name
 
         valid_servers = ["integrations", "sales", "partners"]
 	if server_name.lower() not in valid_servers:
@@ -451,10 +452,12 @@ def main(args):
 		login_name = login_name.replace("@acme.com", "@" + server_name + ".acme.com")
 	try:
 		if api_key == "":
-			print "Login/password connection"
+			if debug:
+				print "Login/password connection"
 			rally = Rally(rally_server, login_name, password, workspace=workspace_name, project='Online Store')
 		if api_key != "":
-			print "Api connection"
+			if debug:
+				print "Api connection"
 			rally = Rally(rally_server, apikey=api_key, workspace=workspace_name, project='Online Store')
         except Exception, details:
 		print traceback.print_exc()
