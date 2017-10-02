@@ -160,14 +160,14 @@ def ws_name_match(name):
 	global testing_mode
 	match = False
 
-	if testing_mode == "true"
-		return True;
+	if testing_mode == "true":
+		return True
 
 	if (server_name == "sales"):
 		match = re.match('[a-z]*.*[a-z]@ca.com[-]\d\d\d\d[-]\d\d[-][A-Z][a-z][a-z]', name)
 	else:
 		match = True  ##bypass naming conventions for Integrations and Partners... may revisit at a later time.
-	return match;
+	return match
 
 def get_workspaceID(name):
         global rally
