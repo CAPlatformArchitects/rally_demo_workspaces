@@ -100,7 +100,7 @@ def read_config():
 			debug_text     = config.get('config','debug')
 			if(debug_text == "true"):
 				debug = 1
-			else
+			else:
 				debug = 0
 
 	if debug:
