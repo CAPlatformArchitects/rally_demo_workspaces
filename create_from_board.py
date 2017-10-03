@@ -105,6 +105,7 @@ def read_config():
 			if(debug_text == "true"):
 				debug = 1
 			else:
+				debug = 0
 	if debug:
         	print "Email Config : %s %s %s %s" % (email_server, email_from, email_to, email_enabled)
 
@@ -251,7 +252,15 @@ def archive_workspace():
 	response = ""
 	actual_name = ""
 	fields = "Name,Owner,State,FormattedID,oid,ScheduleState,ObjectID"
-	criteria = '((ScheduleState = "Completed") and (Ready = "True"))'
+
+        ts = time.time()
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+	#original        
+	criteria = '(((ScheduleState = "Completed") and (Ready = "True")) OR ((ExpirationDate < %s) AND (ScheduleState != "Accepted")))' % st
+
+	#criteria = '((ExpirationDate < %s) AND (ScheduleState != "Accepted"))' % st
+	if debug:
+		print criteria
 	collection = rally.get('Story', query=criteria)
         assert collection.__class__.__name__ == 'RallyRESTResponse'
         if not collection.errors:
@@ -296,8 +305,10 @@ def archive_workspace():
 				print "Updating Story on Kanban Board %s " % task_update
 	                try:
 				response = rally.post('Story', task_update)
-				print response
+				if debug:
+					print response
 			except Exception, details:
+				print "Failure, retrying"
 				#Sometimes the system errors out updating... so I am giving it another try
 				task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
 				response = rally.post('Story', task_update)
@@ -404,6 +415,7 @@ def getStoriesStateDefined():
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace name does not match criteria for creation.  Names should be in the format -- first.last@ca.com-YEAR-MO-Mon as in thomas.mcquitty@ca.com-2017-08-Aug", "DisplayColor" : "#ff0000"}
 			result = rally.post('Story', task_update)
 	return
+
 
 def send_email_error(error_msg):
 	## TODO: Add Error Checking
