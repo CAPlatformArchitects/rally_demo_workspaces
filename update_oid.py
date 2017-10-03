@@ -152,7 +152,8 @@ def main(args):
 		sys.exit(1)
 
 
-	#rally.enableLogging('create_output.log')
+	if debug:
+		rally.enableLogging('update_oid.log')
 	
 	#updates the stories in the defined state
 	print "Checking for New workspaces"

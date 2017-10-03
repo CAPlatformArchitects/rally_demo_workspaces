@@ -463,7 +463,8 @@ def main(args):
         if debug:
                 print "server name is %s" % server_name
 
-	#rally.enableLogging('create_output.log')
+	if debug:
+		rally.enableLogging('create_from_board.log')
         print "Checking for workspaces to archive"
         archive_workspace()
 	login()  ## We do this as the workspace names aren't refreshed automatically.  If we archive a workspace and create a new one with the same name, it will still be "found"

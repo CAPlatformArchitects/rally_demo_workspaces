@@ -463,7 +463,8 @@ def main(args):
                 print ("Error logging in")
                 sys.exit(1)
 
-	#rally.enableLogging('output.log')
+	if debug:
+		rally.enableLogging('output.log')
 
 	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
 

@@ -150,6 +150,9 @@ def main(args):
         print "server name is %s" % args.server
 	server_name = args.server
 	login()
+	if debug:
+		rally.enableLogging('remove_old_stories.log')
+
 	workspace_name = workspace
 	
 	back = float(days_back)
