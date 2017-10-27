@@ -288,22 +288,32 @@ Modify Records - To Modify Existing Records
 """
 def modifyRecords(story):
 
-	print "Exiting at modify records"
+	pd("Enterying modify records")
 	items_modified = 0
-
-        query_text = "select * from updates where day = {} and work_type = 'modify' order by formattedid desc;".format(story.CycleDay)
+	wksp 		= story.Name
+	proj 		= "Online Store"
+        query_text 	= "select * from updates where day = {} and work_type = 'modify' order by formattedid desc;".format(story.CycleDay)
         my_query = query_db(query_text)
+
         for item in my_query:
+
+                rally.setWorkspace(wksp)
+		rally.setProject(proj)
+
+		output_line = "Updating record: {:5} field: {:15} value{}".format(item['formattedid'], item['field'], item['newvalue'])
+		pd(output_line)
+
 		record_query = "FormattedID = {}".format(item["formattedid"])
-                rally.setProject(story.Workspace)
-		rally.setProject("Online Store")
+		fields       = "FormattedID,Name,oid,Project"
 		temp1 = rally.get(item["itemtype"], fetch=fields, query=record_query, projectScopeDown=True)
 		temp = temp1.next()
+
 	      	pd("Printing object")
 		pd(temp.Name)
 	        project = temp.Project.Name
 		pd(project)
 		pd("----updating record-----")
+
 		data = {"FormattedID" : item["formattedid"], item["field"] : item["newvalue"]}
 		try:
 			record = rally.update(item["itemtype"] , data, project=project)
@@ -340,6 +350,12 @@ def performDailyUpdates():
 		items_added = 0
 		items_added 	= addRecords(story.Name, "Shopping Team", story)
 		items_updated  	= modifyRecords(story)
+
+		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
+		print output_line
+
+		exit(1)
+
 		"""
 		debug = False
 
@@ -367,8 +383,6 @@ def performDailyUpdates():
 					items_updated += 1
         	        elif item['formattedid'] is not None:
 		"""
-		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
-		print output_line
 
 		incrementCycleDate(story)
 
