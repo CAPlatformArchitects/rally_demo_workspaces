@@ -56,11 +56,10 @@ def getUserRef(user_name):
         
     return value
 
-
+"""
+Get Object Type from Formatted ID
+"""
 def getItemType(FormattedID):
-	"""
-	Get Object Type from Formatted ID
-	"""
 
         artifacts     = { 'US' : 'UserStory',
                           'TA' : 'Task',
@@ -77,11 +76,11 @@ def getItemType(FormattedID):
                 if key in FormattedID:
                         return artifacts[key]
 
+	return False
 
-
-	
-
-
+"""
+Increment the value on the user story
+"""
 def setInitialCycleDate():
 	global rally
 	global requests_workspace
@@ -106,7 +105,7 @@ def incrementCycleDate(UserStory):
 	pd("Updating CycleDay for {:5}".format(UserStory.FormattedID))
 	out = UserStory.details()
 	pd(out)
-	
+
 	UpdateCycleDay = UserStory.CycleDay + 1
 	data = {"FormattedID" : UserStory.FormattedID, "CycleDay" : "{}".format(UpdateCycleDay)}
 	try:
@@ -119,34 +118,160 @@ def incrementCycleDate(UserStory):
 		traceback.print_exc()
 		exit(1)
 
-def getFormattedId(Name, Type):
+"""
+Returns the formatted ID
+In some cases, we only know the name of the item, so we search for the name
+We need to know the object type and name.
+"""
+def getFormattedId(Type, Name):
 	query = 'Name = "{}"'.format(Name)
 	response = rally.get(Type, query=query)
 	pprint(response)
+	print "ending at getformattedid()"
+	sys.exit(1)
+
+	return False
+
+"""
+Do we have a formattedid?
+
+We need to check to see if the value is a proper formattedId
+They cannot have spaces
+They must be in the US121 format
+They cannot have trailing spaces
+They cannot have trailing letters
+They must start with one of the known identifiers
+If they pass those tests, they are a formatted id
+"""
+def isFormattedId(value):
+
+        artifacts     = { 'US' : 'UserStory',
+                          'TA' : 'Task',
+                          'DE' : 'Defect',
+                          'TC' : 'TestCase',
+                          'T'  : 'PortfolioItemTheme',
+                          'I'  : 'PortfolioItemInitiative',
+                          'F'  : 'PortfolioItemFeature',
+                          'DS' : 'DefectSuite',
+                          'TF' : 'TestFolder'
+                        }
+
+        # Whitespace check
+        if re.search('\s', value):
+                return False
+	# Start with a number?
+        if re.match('\d', value):
+                return False
+
+        for key in artifacts:
+		# Does it match a KEY DIGIT format?
+                matchstring = key + "\d{1,}"
+                if re.match(matchstring, value):
+			#Are there trailing non-digit values?
+                        matchstring = key + "\d{1,}\D"
+                        if re.match(matchstring, value):
+                                return False
+			# All checks passes, it must be a FormattedID
+                        return True
+
+        return False
+
 
 """
 Adds new records to the system based upon the query from the database
-"""
-def addRecords(wksp, proj):
 
+There will need to be an exception for Tasks, which require a project and user story or defect
+If we are working on a task:  Check for a parent.  If no parent, skip.  Tasks must have parents.
+	If there's a parent, get the FormattedID and Project.  Attach to the task Object.
+"""
+def addRecords(wksp, proj, story):
+	global rally
+	global debug
+	debug = True
+
+	pd(wksp)
 	items_added = 0
 	query_text = "select * from updates where day = {} and work_type = 'add' order by formattedid, newentry desc;".format(story.CycleDay)
-	my_query = query_qb(query_text)
+	my_query = query_db(query_text)
 	for item in my_query:
-		pprint(item)
                 debug = True
-                pprint(item)
                 pd("----Creating new value-----")
-                data = {item["field"]: item["newvalue"], "Project" : item['project']}
-                #pprint(data)
-                pd(item["itemtype"])
-                record = rally.create(item["itemtype"], data, project = item['project'], workspace=wksp)
-                pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
+		#pprint(item)
+		proj = item['project']
+		rly_obj = item['itemtype']
+		fieldname = item["field"]
+		fieldvalue = item["newvalue"]
+		parentFormattedId = ""
+
+		output_line =  "Workspace: {} Project: {} Object: {} Field: {} NewValue: {}".format(wksp, proj, rly_obj, fieldname, fieldvalue)
+		pd (output_line)
+		if rly_obj == "Task" and proj is None:
+			# We can't process this... display a message, process next record
+			print "Can't process: Task: {} Day: {} due to missing parent".format(fieldvalue, item['day'])
+			continue
+		if rly_obj == "Task":
+			# we have a task.  Fill out the object properly.
+			# Is the parent a formatted id?  If so, do the update.
+			# If the parent a name?  If so, get the formattedid
+			parent = item['parent']
+
+			#Not a formatted Id, let's get one.
+			if not isFormattedId(parent):
+				parentFormattedId = getFormattedId(item['parent_type'], parent)
+				if parentFormattedId == False:
+					print "Cannot find a {} named {}...skipping".format(item['parent_type'], parent)
+					continue
+			data = {fieldname : fieldvalue, 'Project': proj, 'WorkProduct' : parentFormattedId}
+		else:
+                	data = {fieldname : fieldvalue}
+		pprint(data)
+                #record = rally.create(rly_obj, data, project=proj, workspace=wksp)
+		try:
+			record = rally.create(rly_obj, data, project=proj, workspace=wksp)
+		except Exception, details:
+			print "Exception"
+			print details
+			traceback.print_exc()
+		try:
+		        pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
+		except Exception, details:
+			pass
                 items_added += 1
 
+	pd("Completed Processing addRecord")
 	return items_added
 
-def modifyRecords()
+"""
+Modify Records - To Modify Existing Records
+
+
+def modifyRecords(story):
+	items_modified = 0
+        query_text = "select * from updates where day = {} and work_type = 'modify' order by formattedid, newentry desc;".format(story.CycleDay)
+        my_query = query_db(query_text)
+        for item in my_query:
+		record_query = "FormattedID = {}".format(item["formattedid"])
+                rally.setProject(story.Workspace)
+		rally.setProject("Online Store")
+		temp1 = rally.get(item["itemtype"], fetch=fields, query=record_query, projectScopeDown=True)
+		temp = temp1.next()
+	      	pd("Printing object")
+		pd(temp.Name)
+	        project = temp.Project.Name
+		pd(project)
+		pd("----updating record-----")
+		data = {"FormattedID" : item["formattedid"], item["field"] : item["newvalue"]}
+		try:
+			record = rally.update(item["itemtype"] , data, project=project)
+			pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
+		except Exception, details:
+			print "*** EXCEPTION ***"
+			print "exception %s" % details
+		items_modified += 1
+
+	return items_modified
+
+def linkRecords():
 	pass
 
 def performDailyUpdates():
@@ -164,10 +289,14 @@ def performDailyUpdates():
 		pprint(response)
 		sys.exit(1)
 
+
 	output_line = "{:40} {:10} {:15} {:13}".format("Workspace", "CycleDay", "ItemsUpdated", "ItemsAdded")
 	print output_line
 	for story in response:
-		## Now it is time to start processing
+		items_added = 0
+		items_added 	= addRecords(story.Name, "Shopping Team", story)
+		items_updated  	= modifyRecords(story)
+		"""
 		debug = False
 
 		query_text = 'select * from updates where day = {} order by formattedid, newentry desc;'.format(story.CycleDay)
@@ -193,35 +322,7 @@ def performDailyUpdates():
 					rally.update(item["itemtype"], data, project=upItem.Project.Name)
 					items_updated += 1
         	        elif item['formattedid'] is not None:
-				q = "FormattedID = {}".format(item["formattedid"])
-				temp1 = rally.get(item["itemtype"], fetch=fields, query=q, projectScopeDown=True)
-				temp = temp1.next()
-	                	pd("Printing object")
-				#pd(pprint(temp))
-				pd(temp.Name)
-	                	#pd(temp.details())
-	        	        project = temp.Project.Name
-				pd(project)
-				pd("----updating record-----")
-				data = {"FormattedID" : item["formattedid"], item["field"] : item["newvalue"]}
-				try:
-					record = rally.update(item["itemtype"] , data, project=project)
-					pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
-				except Exception, details:
-					print "*** EXCEPTION ***"
-					print "exception %s" % details
-				items_updated += 1
-			elif item["formattedid"] is None and item['field'] is not None:
-				debug = True
-				pprint(item)
-				pd("----Creating new value-----")
-				data = {item["field"]: item["newvalue"], "Project" : "Online Store"}
-				#pprint(data)
-				pd(item["itemtype"])
-				record = rally.create(item["itemtype"], data)
-				pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
-				items_added += 1
-
+		"""
 		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
 		print output_line
 
