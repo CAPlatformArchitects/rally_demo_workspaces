@@ -328,6 +328,9 @@ def modifyRecords(story):
 def linkRecords():
 	pass
 
+def modifyAltRecords():
+	pass
+
 def performDailyUpdates():
 	## We need to get the workspaces that have update_data flag set.
 	## These are set in the user story that creates the workspace
