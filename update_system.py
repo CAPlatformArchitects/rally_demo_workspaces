@@ -10,6 +10,7 @@ import copy
 import os
 import argparse
 import traceback
+import re
 
 global rally
 global server_name
@@ -123,12 +124,16 @@ Returns the formatted ID
 In some cases, we only know the name of the item, so we search for the name
 We need to know the object type and name.
 """
-def getFormattedId(Type, Name):
+def getFormattedId(Type, Name, wksp, proj):
+	pd ("Entering get formatted id Type: {}, Name: {}".format(Type, Name))
+
 	query = 'Name = "{}"'.format(Name)
-	response = rally.get(Type, query=query)
-	pprint(response)
-	print "ending at getformattedid()"
-	sys.exit(1)
+	response = rally.get(Type, query=query, workspace=wksp, project=proj)
+	if not response.errors:
+		item = response.next()
+		return item.FormattedID
+
+	pd("ending at getformattedid()")
 
 	return False
 
@@ -176,6 +181,32 @@ def isFormattedId(value):
 
         return False
 
+"""
+getObjectRef -- get the ref for object
+"""
+def getObjectRef(workspace, project, parentType, formattedId):
+	global rally
+
+        record_query = "FormattedID = {}".format(formattedId)
+	pd(record_query)
+	items = rally.get(parentType, project=project, workspace=workspace, query=record_query, projectScopeDown=True)
+	item = items.next()
+	return item.ref
+
+
+"""
+GetProjectRef -- Get the .ref for the project
+"""
+def getProjectRef(wksp, proj):
+	global rally
+        try:
+		rally.setWorkspace(wksp)
+                value = rally.getProject("Shopping Team").ref
+        except Exception, details:
+                sys.stderr.write("ERROR: %s \n" % details)
+                sys.exit(1)
+
+	return value
 
 """
 Adds new records to the system based upon the query from the database
@@ -191,7 +222,7 @@ def addRecords(wksp, proj, story):
 
 	pd(wksp)
 	items_added = 0
-	query_text = "select * from updates where day = {} and work_type = 'add' order by formattedid, newentry desc;".format(story.CycleDay)
+	query_text = "select * from updates where day = {} and work_type = 'add' order by formattedid desc;".format(story.CycleDay)
 	my_query = query_db(query_text)
 	for item in my_query:
                 debug = True
@@ -203,25 +234,36 @@ def addRecords(wksp, proj, story):
 		fieldvalue = item["newvalue"]
 		parentFormattedId = ""
 
-		output_line =  "Workspace: {} Project: {} Object: {} Field: {} NewValue: {}".format(wksp, proj, rly_obj, fieldname, fieldvalue)
+		output_line =  "Workspace: {:40} Project: {:30} Object: {:10} Field: {:10} NewValue: {:10} Parent: {}".format(wksp, proj, rly_obj, fieldname, fieldvalue, item['parent'])
 		pd (output_line)
-		if rly_obj == "Task" and proj is None:
+		if rly_obj == "Task" and item['parent'] is None:
 			# We can't process this... display a message, process next record
 			print "Can't process: Task: {} Day: {} due to missing parent".format(fieldvalue, item['day'])
 			continue
 		if rly_obj == "Task":
 			# we have a task.  Fill out the object properly.
+			# Tasks Must have:
+			#		WorkProduct as UserStory.ref
+			#		Project same as UserStoryProject.ref
 			# Is the parent a formatted id?  If so, do the update.
 			# If the parent a name?  If so, get the formattedid
 			parent = item['parent']
 
 			#Not a formatted Id, let's get one.
 			if not isFormattedId(parent):
-				parentFormattedId = getFormattedId(item['parent_type'], parent)
-				if parentFormattedId == False:
+				pd("Searching for parent")
+				parentFormattedId = getFormattedId(item['parent_type'], parent, wksp, proj)
+				print "ParentFormattedId {}".format(parentFormattedId)
+				if parentFormattedId == False or parentFormattedId is None:
 					print "Cannot find a {} named {}...skipping".format(item['parent_type'], parent)
 					continue
-			data = {fieldname : fieldvalue, 'Project': proj, 'WorkProduct' : parentFormattedId}
+				else:
+					parent = parentFormattedId
+			pd("PARENT ID IS {}".format(parent))
+			#getObjectRef(workspace, project, parentType, formattedId):
+			parentRef = getObjectRef(wksp, proj, item['parent_type'], parent)
+			#data = {fieldname : fieldvalue, 'Project': proj, 'WorkProduct' : ref}
+			data = {fieldname : fieldvalue, 'Project': getProjectRef(wksp,proj), 'WorkProduct' : parentRef }
 		else:
                 	data = {fieldname : fieldvalue}
 		pprint(data)
@@ -243,11 +285,13 @@ def addRecords(wksp, proj, story):
 
 """
 Modify Records - To Modify Existing Records
-
-
+"""
 def modifyRecords(story):
+
+	print "Exiting at modify records"
 	items_modified = 0
-        query_text = "select * from updates where day = {} and work_type = 'modify' order by formattedid, newentry desc;".format(story.CycleDay)
+
+        query_text = "select * from updates where day = {} and work_type = 'modify' order by formattedid desc;".format(story.CycleDay)
         my_query = query_db(query_text)
         for item in my_query:
 		record_query = "FormattedID = {}".format(item["formattedid"])
@@ -299,7 +343,7 @@ def performDailyUpdates():
 		"""
 		debug = False
 
-		query_text = 'select * from updates where day = {} order by formattedid, newentry desc;'.format(story.CycleDay)
+		query_text = 'select * from updates where day = {} order by formattedid desc;'.format(story.CycleDay)
 	        my_query = query_db(query_text)
 		items_updated = 0
 		items_added = 0
