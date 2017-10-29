@@ -314,7 +314,8 @@ def modifyRecords(story):
 		pd(project)
 		pd("----updating record-----")
 
-		data = {"FormattedID" : item["formattedid"], item["field"] : item["newvalue"]}
+		value = getRef(item['field'], item['newvalue'], item['itemtype'])
+		data = {"FormattedID" : item["formattedid"], item["field"] : value}
 		try:
 			record = rally.update(item["itemtype"] , data, project=project)
 			pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
@@ -324,6 +325,32 @@ def modifyRecords(story):
 		items_modified += 1
 
 	return items_modified
+
+"""
+getRef -- A clearing house!
+
+getRef is used to capture all the fields that require a .ref value.
+Rather than getting everything by looking it up in the update code,
+we simply call this and it will return the .ref value, if needed.
+This means we can call this on any value and it will return .refs or
+the actual value.
+"""
+def getRef(field, value, object_type):
+	global rally
+
+	portfolio_items = { 'PortfolioItem/Theme' : 'Theme',
+			    'PortfolioItem/Initiative' : 'Initiative',
+			    'PortfolioItem/Feature' : 'Feature'
+			  }
+	pd("Object Type: {}  Field: {}  Value: {}".format(object_type, field, value))
+
+	if field == 'State' and object_type in portfolio_items:
+		value = rally.getState(portfolio_items[object_type], value).ref
+		return value
+
+	if field == 'Iteration':
+		pass
+	return value
 
 def linkRecords():
 	pass
