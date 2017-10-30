@@ -119,20 +119,64 @@ def incrementCycleDate(UserStory):
 		traceback.print_exc()
 		exit(1)
 
+def getUserStoryFormattedId(Type, Name, wksp, proj):
+	pd ("Entering get Get User Story formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
+
+	query = 'Name = "{}"'.format(Name)
+	pprint (query)
+
+	rally.setProject('Shopping Team')
+	rally.setWorkspace('testing')
+	pprint(rally.getProject().Name)
+	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
+	args = {"projectScopeDown" : True, "projectScopUp" : "True"}
+
+	print "trying search()"
+	response = rally.search("TestProject", projectScopeDown=True, projectScopeUp=True, kwargs=args)
+	for item in response:
+		pprint(response)
+		print "Search Function FormattedID : {}".format(item.FormattedID)
+		if item.Name == Name:
+			return item.FormattedID
+
+	response = rally.get('UserStory')
+	for item in response:
+		pprint(response)
+		print "UserStory FormattedID : {} Name: {} Workspacee: {} Project {}".format(item.FormattedID, item.Name, item.Workspace.Name, item.Project.Name)
+		if item.Name == Name:
+			print "Found!! Story Name {} Search Name {} ::: FormattedID {}".format(item.Name, Name, item.FormattedID)
+			return item.FormattedID
+
+
+	print "Could not find UserStory with name {}".format(Name)
+	pprint(response)
+	pd("ending at getformattedid()")
+
+	return False
+
+
+
 """
 Returns the formatted ID
 In some cases, we only know the name of the item, so we search for the name
 We need to know the object type and name.
 """
 def getFormattedId(Type, Name, wksp, proj):
-	pd ("Entering get formatted id Type: {}, Name: {}".format(Type, Name))
+	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
 
 	query = 'Name = "{}"'.format(Name)
-	response = rally.get(Type, query=query, workspace=wksp, project=proj)
-	if not response.errors:
-		item = response.next()
+	pprint (query)
+
+	proj='Shopping Team'
+	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
+	args = {"projectScopeDown" : "True", "projectScopUp" : "True", "Project" : proj}
+	response = rally.get(Type, query=query, workspace=wksp, kwargs = args)
+	for item in response:
+		pprint(response)
+		print "FormattedID : {}".format(item.FormattedID)
 		return item.FormattedID
 
+	pprint(response)
 	pd("ending at getformattedid()")
 
 	return False
@@ -182,9 +226,9 @@ def isFormattedId(value):
         return False
 
 """
-getObjectRef -- get the ref for object
+getParentObjectRef -- get the ref for object
 """
-def getObjectRef(workspace, project, parentType, formattedId):
+def getParentObjectRef(workspace, project, parentType, formattedId):
 	global rally
 
         record_query = "FormattedID = {}".format(formattedId)
@@ -193,6 +237,43 @@ def getObjectRef(workspace, project, parentType, formattedId):
 	item = items.next()
 	return item.ref
 
+def getObjectRefByFormattedId(object_type, formattedId):
+    global rally
+    global debug
+    debug = 1
+
+    if not isFormattedId(formattedId):
+	print "Error, no formatted id provided"
+	return
+
+    pd( "Getting Object Ref by FormattedID {} {}".format(object_type, formattedId) ) 
+
+    collection = rally.get(object_type, projectScopeUp=True, projectScopeDown=True)
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                fId = '%s' % pe.FormattedID
+                pd(pe.FormattedID)
+                if(fId == formattedId):
+                    pd('Found: {} {}'.format(pe.oid, pe.FormattedID))
+                    return pe.ref
+
+def getObjectRefByName(object_type, value):
+    global rally
+    global debug
+    debug = 1
+
+    pd( "Getting Object Ref by Name {} {}".format(object_type, value) )
+
+    collection = rally.get(object_type)
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                name = '%s' % pe.Name
+                pd(pe.Name)
+                if(name == value):
+                    pd('Found: {} {}'.format(pe.oid, pe.Name))
+                    return pe.oid
 
 """
 GetProjectRef -- Get the .ref for the project
@@ -260,8 +341,8 @@ def addRecords(wksp, proj, story):
 				else:
 					parent = parentFormattedId
 			pd("PARENT ID IS {}".format(parent))
-			#getObjectRef(workspace, project, parentType, formattedId):
-			parentRef = getObjectRef(wksp, proj, item['parent_type'], parent)
+			#getParentObjectRef(workspace, project, parentType, formattedId):
+			parentRef = getParentObjectRef(wksp, proj, item['parent_type'], parent)
 			#data = {fieldname : fieldvalue, 'Project': proj, 'WorkProduct' : ref}
 			data = {fieldname : fieldvalue, 'Project': getProjectRef(wksp,proj), 'WorkProduct' : parentRef }
 		else:
@@ -308,20 +389,23 @@ def modifyRecords(story):
 		temp1 = rally.get(item["itemtype"], fetch=fields, query=record_query, projectScopeDown=True)
 		temp = temp1.next()
 
-	      	pd("Printing object")
-		pd(temp.Name)
+	      	pd("Object {}".format(temp.Name))
 	        project = temp.Project.Name
 		pd(project)
 		pd("----updating record-----")
 
 		value = getRef(item['field'], item['newvalue'], item['itemtype'])
+		pd("Value is: {}".format(value))
 		data = {"FormattedID" : item["formattedid"], item["field"] : value}
+		pd(data)
 		try:
 			record = rally.update(item["itemtype"] , data, project=project)
 			pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
 		except Exception, details:
 			print "*** EXCEPTION ***"
 			print "exception %s" % details
+			if debug:
+				sys.exit(1)
 		items_modified += 1
 
 	return items_modified
@@ -337,6 +421,8 @@ the actual value.
 """
 def getRef(field, value, object_type):
 	global rally
+	global debug
+	debug = True
 
 	portfolio_items = { 'PortfolioItem/Theme' : 'Theme',
 			    'PortfolioItem/Initiative' : 'Initiative',
@@ -345,15 +431,100 @@ def getRef(field, value, object_type):
 	pd("Object Type: {}  Field: {}  Value: {}".format(object_type, field, value))
 
 	if field == 'State' and object_type in portfolio_items:
-		value = rally.getState(portfolio_items[object_type], value).ref
-		return value
+		return rally.getState(portfolio_items[object_type], value).ref
 
 	if field == 'Iteration':
+		pd('Entering Iteration')
+		return getObjectRefByName(field, value)
+
+	##TODO TEST THIS!!
+	if field == 'Release':
+		pd('Entering Release')
+		return getObjectRefByName(field, value)
+
+	if field == 'Project':
+		return getObjectRefByName(field, value)
+
+	if field == 'Owner':
 		pass
+
 	return value
 
-def linkRecords():
-	pass
+"""
+GetID - Returns a formattedid or null
+
+It tests to see if we have a formattedid, if so return it.
+If it is not a formattedid, search for it.  Return None or 
+the formatted id.
+"""
+def getId(objectType, field, wksp, proj):
+	
+	if isFormattedId(field):
+		return field
+	else:
+		return getFormattedId(objectType, field, wksp, proj)
+
+	return None
+
+
+def linkRecords(wksp, proj, story):
+	global rally
+
+        pd("Entering Linking Records")
+        items_modified = 0
+        wksp            = story.Name
+        query_text      = "select * from updates where day = {} and work_type = 'link' order by formattedid desc;".format(story.CycleDay)
+	parentFormattedId = ""
+	formattedID 	= ""
+	itemFormattedId= ""
+        my_query = query_db(query_text)
+
+	if proj == "":
+	        proj            = "Online Store"
+
+
+	rally.setWorkspace(wksp)
+	rally.setProject(proj)
+
+
+	## We need to link items.  Get the types loaded up, set up the data field submit
+        for item in my_query:
+		
+		parentFormattedId = getId(item['parent_type'], item['parent'], wksp, proj)
+		#itemFormattedId = getId(item['itemtype'], item['newvalue'], wksp, proj)
+		if item['itemtype'] == 'UserStory':
+			pd("DAMMM!!!")
+			itemFormattedId = getUserStoryFormattedId('UserStory', item['newvalue'], wksp, proj)
+			print "I: {}".format(itemFormattedId)
+
+		print "Item ID: {} Parent ID: {}".format(itemFormattedId, parentFormattedId)
+		parentRef = getObjectRefByFormattedId(item['parent_type'], parentFormattedId) 
+
+		data = {"FormattedID" : itemFormattedId, 'Parent' : parentRef}
+		if debug:
+			print "Updating {}".format(item['itemtype'])
+			pprint(data)
+		response = rally.update(item['itemtype'], data)
+		if errors in response:
+			print "error processing record"
+			pprint(response)
+		"""
+		if item['itemtype'] == 'Task':
+
+			pass
+
+		if item['itemtype'] == 'UserStory':
+			pass
+
+		if item['itemtype'] == 'PortfolioItem/Feature':
+			pass
+
+		if item['itemtype'] == 'PortfolioItem/Initiative':
+			pass
+
+		if item['itemtype'] == 'PortfolioItem/Theme':
+			pass
+		"""
 
 def modifyAltRecords():
 	pass
@@ -378,8 +549,9 @@ def performDailyUpdates():
 	print output_line
 	for story in response:
 		items_added = 0
-		items_added 	= addRecords(story.Name, "Shopping Team", story)
-		items_updated  	= modifyRecords(story)
+		#items_added 	= addRecords(story.Name, "Shopping Team", story)
+		#items_updated  	= modifyRecords(story)
+		items_linked	= linkRecords(story.Name, 'Online Store', story)
 
 		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
 		print output_line
@@ -478,3 +650,4 @@ def main(args):
 if __name__ == '__main__':
         main(sys.argv[1:])
         sys.exit(0)
+
