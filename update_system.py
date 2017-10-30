@@ -125,21 +125,22 @@ def getUserStoryFormattedId(Type, Name, wksp, proj):
 	query = 'Name = "{}"'.format(Name)
 	pprint (query)
 
-	rally.setProject('Shopping Team')
-	rally.setWorkspace('testing')
+	rally.setProject(proj)
+	rally.setWorkspace(wksp)
 	pprint(rally.getProject().Name)
 	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
-	args = {"projectScopeDown" : True, "projectScopUp" : "True"}
+	args = {"projectScopeDown" : 'True', "projectScopUp" : "True"}
 
 	print "trying search()"
-	response = rally.search("TestProject", projectScopeDown=True, projectScopeUp=True, kwargs=args)
+	response = rally.search("TestProject", kwargs=args)
 	for item in response:
 		pprint(response)
 		print "Search Function FormattedID : {}".format(item.FormattedID)
 		if item.Name == Name:
 			return item.FormattedID
 
-	response = rally.get('UserStory')
+	print "ended search"
+	response = rally.get('UserStory', query=query, project='Online Store', projectScopeDown=True)
 	for item in response:
 		pprint(response)
 		print "UserStory FormattedID : {} Name: {} Workspacee: {} Project {}".format(item.FormattedID, item.Name, item.Workspace.Name, item.Project.Name)
@@ -166,11 +167,11 @@ def getFormattedId(Type, Name, wksp, proj):
 
 	query = 'Name = "{}"'.format(Name)
 	pprint (query)
-
-	proj='Shopping Team'
+	
+	rally.setWorkspace(wksp)
+	rally.setProject(proj)
 	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
-	args = {"projectScopeDown" : "True", "projectScopUp" : "True", "Project" : proj}
-	response = rally.get(Type, query=query, workspace=wksp, kwargs = args)
+	response = rally.get(Type, query=query, projectScopeDown=True)
 	for item in response:
 		pprint(response)
 		print "FormattedID : {}".format(item.FormattedID)
