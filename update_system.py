@@ -501,14 +501,19 @@ def linkRecords(wksp, proj, story):
 		print "Item ID: {} Parent ID: {}".format(itemFormattedId, parentFormattedId)
 		parentRef = getObjectRefByFormattedId(item['parent_type'], parentFormattedId) 
 
-		data = {"FormattedID" : itemFormattedId, 'Parent' : parentRef}
+		rally.setProject('Shopping Team')
+		#data = {"FormattedID" : itemFormattedId, 'Project' : getProjectRef(wksp, proj)}
+		data = {"FormattedID" : itemFormattedId, 'Expedite' : 'True', 'PortfolioItem' : getPortfolioItemFeatureRef(item['parent'])}
 		if debug:
 			print "Updating {}".format(item['itemtype'])
 			pprint(data)
-		response = rally.update(item['itemtype'], data)
-		if errors in response:
-			print "error processing record"
-			pprint(response)
+		try:
+			response = rally.update(item['itemtype'], data)
+			if errors in response:
+				print "error processing record {}".format(response.error)
+				pprint(response)
+		except Exception, details:
+			print details
 		"""
 		if item['itemtype'] == 'Task':
 
@@ -527,6 +532,26 @@ def linkRecords(wksp, proj, story):
 			pass
 		"""
 
+
+def getPortfolioItemFeatureRef(piName):
+    global rally
+ 
+    if debug:
+        print "Getting Feature Ref"
+
+    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature?")
+    #pprint(collection)
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                name = '%s' % pe.Name
+                if debug:
+                    print pe.Name
+                if(name == piName):
+                    if debug:
+                        print "Feature Found"
+                    #print pe.oid, pe.Name
+                    return pe.oid
 def modifyAltRecords():
 	pass
 
