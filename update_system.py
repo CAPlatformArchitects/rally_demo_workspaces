@@ -123,7 +123,7 @@ def getUserStoryFormattedId(Type, Name, wksp, proj):
 	pd ("Entering get Get User Story formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
 
 	query = 'Name = "{}"'.format(Name)
-	pprint (query)
+	pd("Query is: {}".format(query))
 
 	rally.setProject(proj)
 	rally.setWorkspace(wksp)
@@ -131,21 +131,13 @@ def getUserStoryFormattedId(Type, Name, wksp, proj):
 	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
 	args = {"projectScopeDown" : 'True', "projectScopUp" : "True"}
 
-	print "trying search()"
-	response = rally.search("TestProject", kwargs=args)
+	response = rally.get(Type, query=query, project=proj, projectScopeDown=True)
 	for item in response:
-		pprint(response)
-		print "Search Function FormattedID : {}".format(item.FormattedID)
+		if debug:
+			pprint(response)
+		pd( "UserStory FormattedID : {} Name: {} Workspacee: {} Project {}".format(item.FormattedID, item.Name, item.Workspace.Name, item.Project.Name))
 		if item.Name == Name:
-			return item.FormattedID
-
-	print "ended search"
-	response = rally.get('UserStory', query=query, project='Online Store', projectScopeDown=True)
-	for item in response:
-		pprint(response)
-		print "UserStory FormattedID : {} Name: {} Workspacee: {} Project {}".format(item.FormattedID, item.Name, item.Workspace.Name, item.Project.Name)
-		if item.Name == Name:
-			print "Found!! Story Name {} Search Name {} ::: FormattedID {}".format(item.Name, Name, item.FormattedID)
+			pd( "Found!! Story Name {} Search Name {} ::: FormattedID {}".format(item.Name, Name, item.FormattedID))
 			return item.FormattedID
 
 
@@ -436,7 +428,9 @@ def getRef(field, value, object_type):
 
 	if field == 'Iteration':
 		pd('Entering Iteration')
-		return getObjectRefByName(field, value)
+		#return getObjectRefByName(field, value)
+		#def _getObjectOIDorRef(objType, objectName, retType):
+		return _getObjectOIDorRef(object_type, value, "oid") 
 
 	##TODO TEST THIS!!
 	if field == 'Release':
@@ -490,36 +484,37 @@ def linkRecords(wksp, proj, story):
 
 	## We need to link items.  Get the types loaded up, set up the data field submit
         for item in my_query:
-		
-		parentFormattedId = getId(item['parent_type'], item['parent'], wksp, proj)
-		#itemFormattedId = getId(item['itemtype'], item['newvalue'], wksp, proj)
-		if item['itemtype'] == 'UserStory':
-			pd("DAMMM!!!")
-			itemFormattedId = getUserStoryFormattedId('UserStory', item['newvalue'], wksp, proj)
-			print "I: {}".format(itemFormattedId)
 
-		print "Item ID: {} Parent ID: {}".format(itemFormattedId, parentFormattedId)
+		parentFormattedId = getId(item['parent_type'], item['parent'], wksp, proj)
+
+
+		if item['itemtype'] == 'UserStory':
+			itemFormattedId = getUserStoryFormattedId('UserStory', item['newvalue'], wksp, proj)  ##TODO Why am I useing a UserStory here?  Perhaps a collection search?
+			pd( "I: {}".format(itemFormattedId))
+
+		pd( "Item ID: {} Parent ID: {}".format(itemFormattedId, parentFormattedId))
 		parentRef = getObjectRefByFormattedId(item['parent_type'], parentFormattedId) 
 
-		rally.setProject('Shopping Team')
-		#data = {"FormattedID" : itemFormattedId, 'Project' : getProjectRef(wksp, proj)}
-		data = {"FormattedID" : itemFormattedId, 'Expedite' : 'True', 'PortfolioItem' : getPortfolioItemFeatureRef(item['parent'])}
+		rally.setProject(item['project'])
+		data = {"FormattedID" : itemFormattedId, 'PortfolioItem' : getPortfolioItemFeatureRef(item['parent'])}
 		if debug:
 			print "Updating {}".format(item['itemtype'])
 			pprint(data)
 		try:
 			response = rally.update(item['itemtype'], data)
 			if errors in response:
-				print "error processing record {}".format(response.error)
+				print "Error processing record, record dump is next"
 				pprint(response)
 		except Exception, details:
 			print details
-		"""
-		if item['itemtype'] == 'Task':
 
+
+		if item['itemtype'] == 'Task': 
+			print "Tasks are linked when they are created.  We don't move them to other objects"
 			pass
 
 		if item['itemtype'] == 'UserStory':
+			
 			pass
 
 		if item['itemtype'] == 'PortfolioItem/Feature':
@@ -530,7 +525,6 @@ def linkRecords(wksp, proj, story):
 
 		if item['itemtype'] == 'PortfolioItem/Theme':
 			pass
-		"""
 
 
 def getPortfolioItemFeatureRef(piName):
@@ -552,6 +546,37 @@ def getPortfolioItemFeatureRef(piName):
                         print "Feature Found"
                     #print pe.oid, pe.Name
                     return pe.oid
+"""
+GetObjectOIDorRef 
+
+Gets any generic object by building a collection url, then returning the type asked for
+"""
+def _getObjectOIDorRef(objType, objectName, retType):
+    global rally
+ 
+    if debug:
+        print "Getting Feature Ref"
+
+    objectName = objectName.lower()
+    if objType == "userstory":
+	objType = "hierarchicalrequirement"
+
+    url = "https://rally1.rallydev.com/slm/webservice/v2.0/{}?".format(objType)
+    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature?")
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                name = '%s' % pe.Name
+                pd(pe.Name)
+                if(name == objectName):
+                    pd("Found Object {}".format(name))
+                    if retType == "oid":
+	                    return pe.oid
+                    if retType == "ref":
+			    return pe.ref
+
+    return False
+
 def modifyAltRecords():
 	pass
 
@@ -575,8 +600,8 @@ def performDailyUpdates():
 	print output_line
 	for story in response:
 		items_added = 0
-		#items_added 	= addRecords(story.Name, "Shopping Team", story)
-		#items_updated  	= modifyRecords(story)
+		items_added 	= addRecords(story.Name, "Shopping Team", story)
+		items_updated  	= modifyRecords(story)
 		items_linked	= linkRecords(story.Name, 'Online Store', story)
 
 		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
