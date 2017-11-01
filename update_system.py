@@ -4,16 +4,19 @@ import datetime
 import psycopg2
 import json
 import collections
-from pprint import pprint
-from pyral import Rally, rallyWorkset
+import logging
 import copy
 import os
 import argparse
 import traceback
 import re
+from pprint import pprint
+from pyral import Rally, rallyWorkset
 
 global rally
 global server_name
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 story_project_ref = {}
 story_ref = {}
@@ -28,11 +31,47 @@ requests_project = ""
 user_names = {}
 project_names = {}
 debug = 0
+user_stories = {}
 
-# get the first instance of a user
-## Get's a user ref for Rally
-## First time, it will query the system and add it to the dictionary
-## Subsequent calls will have cached user information, speeding up the system
+
+
+def printAllUserStories():
+    print "Dictionary Length: {}".format(len(user_stories))
+    for item in user_stories:
+	print(item)
+
+def getAllUserStories():
+    global rally
+    count = 0
+    user_stories.clear()
+
+    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement?fetch=true&pagesize=600")
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                count += 1
+                #pprint(vars(pe))
+                #output = "Name: {:30} Project {:30} FID: {:5}".format(pe.Name, pe.Project.Name, pe.FormattedID)
+                #print output
+                user_stories[pe.FormattedID] = dict([('FID', pe.FormattedID), ('Name', pe.Name), ('ref', pe.ref), ('oid', pe.oid)])
+    print "Count {}",format(count)
+
+def getUserStoryRefByName(name):
+    if len(user_stories) == 0:
+		getAllUserStories()
+    for name, value in user_stories.iteritems():
+        for x,y in value.iteritems():
+           if x == 'FID' and y == name:
+		print value['ref'], value['FID']
+                return value['ref']
+
+
+"""
+get the first instance of a user
+Get's a user ref for Rally
+First time, it will query the system and add it to the dictionary
+Subsequent calls will have cached user information, speeding up the system
+"""
 def getUserRef(user_name):
     global rally
     global server_name
@@ -131,7 +170,7 @@ def getUserStoryFormattedId(Type, Name, wksp, proj):
 	pd ("Entering get formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
 	args = {"projectScopeDown" : 'True', "projectScopUp" : "True"}
 
-	response = rally.get(Type, query=query, project=proj, projectScopeDown=True)
+	response = rally.get(Type, query=query, project=proj, projectScopeDown=True, kwargs=args)
 	for item in response:
 		if debug:
 			pprint(response)
@@ -224,16 +263,22 @@ getParentObjectRef -- get the ref for object
 def getParentObjectRef(workspace, project, parentType, formattedId):
 	global rally
 
+	project = 'Online Store'  #The system needs to search all the objects.
         record_query = "FormattedID = {}".format(formattedId)
+	pd("getParentObjectRef wksp: {} proj: {} parentType: {} Id: {}".format(workspace, project, parentType, formattedId))
 	pd(record_query)
+
 	items = rally.get(parentType, project=project, workspace=workspace, query=record_query, projectScopeDown=True)
-	item = items.next()
-	return item.ref
+	for item in items:
+		return item.ref
+
+	print "Error getting Parent Ref Object"
+	return False
 
 def getObjectRefByFormattedId(object_type, formattedId):
     global rally
     global debug
-    debug = 1
+    debug = 0
 
     if not isFormattedId(formattedId):
 	print "Error, no formatted id provided"
@@ -296,7 +341,7 @@ def addRecords(wksp, proj, story):
 
 	pd(wksp)
 	items_added = 0
-	query_text = "select * from updates where day = {} and work_type = 'add' order by formattedid desc;".format(story.CycleDay)
+	query_text = "select * from updates where day = {} and work_type = 'add' order by (case when field='Name' then 0 else 1 end), formattedid desc;".format(story.CycleDay)
 	my_query = query_db(query_text)
 	for item in my_query:
                 debug = True
@@ -348,6 +393,7 @@ def addRecords(wksp, proj, story):
 			print "Exception"
 			print details
 			traceback.print_exc()
+			sys.exit(1)
 		try:
 		        pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
 		except Exception, details:
@@ -373,11 +419,20 @@ def modifyRecords(story):
 
                 rally.setWorkspace(wksp)
 		rally.setProject(proj)
-
-		output_line = "Updating record: {:5} field: {:15} value{}".format(item['formattedid'], item['field'], item['newvalue'])
+		formattedId = ""
+		output_line = "Updating record: {:5} field: {:15} value: {} proj: {} wksp: {}".format(item['formattedid'], item['field'], item['newvalue'], proj, wksp)
 		pd(output_line)
+		if not isFormattedId(item['formattedid']):
+			pd("NOT A FORMATTED ID: {}".format(item['formattedid']))
+			formattedId = getId(item['itemtype'], item['formattedid'], wksp, proj)
+			pd("FOUND FORMATTED?? {}".format(formattedId))
+		else:
+			formattedId = item['formattedid']
 
-		record_query = "FormattedID = {}".format(item["formattedid"])
+		record_query = "FormattedID = {}".format(formattedId)
+
+		#record_query = "FormattedID = {}".format(item["formattedid"])
+		#record_query = "FormattedID = {}".format(item['formattedid'])
 		fields       = "FormattedID,Name,oid,Project"
 		temp1 = rally.get(item["itemtype"], fetch=fields, query=record_query, projectScopeDown=True)
 		temp = temp1.next()
@@ -389,7 +444,10 @@ def modifyRecords(story):
 
 		value = getRef(item['field'], item['newvalue'], item['itemtype'])
 		pd("Value is: {}".format(value))
-		data = {"FormattedID" : item["formattedid"], item["field"] : value}
+		if item['field'] == 'PortfolioItem/Feature':
+			data = {"FormattedID" : formattedId, 'PortfolioItem' : value}
+		else:
+			data = {"FormattedID" : formattedId, item["field"] : value}
 		pd(data)
 		try:
 			record = rally.update(item["itemtype"] , data, project=project)
@@ -397,8 +455,8 @@ def modifyRecords(story):
 		except Exception, details:
 			print "*** EXCEPTION ***"
 			print "exception %s" % details
-			if debug:
-				sys.exit(1)
+			logger.info("Exception %s")
+			logger.info(output_line)
 		items_modified += 1
 
 	return items_modified
@@ -428,9 +486,7 @@ def getRef(field, value, object_type):
 
 	if field == 'Iteration':
 		pd('Entering Iteration')
-		#return getObjectRefByName(field, value)
-		#def _getObjectOIDorRef(objType, objectName, retType):
-		return _getObjectOIDorRef(object_type, value, "oid") 
+		return getObjectRefByName(field, value)
 
 	##TODO TEST THIS!!
 	if field == 'Release':
@@ -440,10 +496,59 @@ def getRef(field, value, object_type):
 	if field == 'Project':
 		return getObjectRefByName(field, value)
 
+        if field == 'Requirement':
+		return getUserStoryRefByName(value)
+
 	if field == 'Owner':
+		return getUserRef(value)
+
+	if field == 'PortfolioItem/Feature':
+		pd("Getting Feature Ref")  ## Works for name, not FID... add check for this.
+		if not isFormattedId(value):
+			return getPortfolioItemFeatureRef(value)
+		else:
+			return getPortfolioItemFeatureRefByFId(value)
 		pass
 
 	return value
+
+
+def getUserRef(user_name):
+    global rally
+    global server_name
+    global debug
+
+    # If we need to work on another instance, say integration or partners, we need to change the email address of the users
+    if server_name == "integrations" or server_name == "partners":
+	user_name = user_name.replace("@acme.com", "@" + server_name + ".acme.com")
+
+    if debug:
+        print(user_names.items())
+    
+    if user_name in user_names:
+        if debug:
+            print("Found %s" % user_name)
+        value = user_names[user_name]
+    else:
+        if debug:
+            print("Adding name %s " %user_name)
+        value = rally.getUserInfo(username=user_name).pop(0).ref
+        user_names[user_name] = value
+        
+    return value
+
+def getReleaseRef(object_value):
+    global rally
+
+    if debug:
+        print "Getting Release Data"
+    collection = rally.get('Release')
+    assert collection.__class__.__name__ == 'RallyRESTResponse'
+    if not collection.errors:
+            for pe in collection:
+                name = '%s' % pe.Name
+                if(name == object_value):
+                    return pe.ref
 
 """
 GetID - Returns a formattedid or null
@@ -470,54 +575,41 @@ def linkRecords(wksp, proj, story):
         wksp            = story.Name
         query_text      = "select * from updates where day = {} and work_type = 'link' order by formattedid desc;".format(story.CycleDay)
 	parentFormattedId = ""
-	formattedID 	= ""
+	childFormattedID 	= ""
 	itemFormattedId= ""
         my_query = query_db(query_text)
 
-	if proj == "":
-	        proj            = "Online Store"
 
 
-	rally.setWorkspace(wksp)
-	rally.setProject(proj)
 
 
 	## We need to link items.  Get the types loaded up, set up the data field submit
         for item in my_query:
 
+
+		rally.setWorkspace(wksp)
+		rally.setProject(proj)
+
 		parentFormattedId = getId(item['parent_type'], item['parent'], wksp, proj)
-
-
-		if item['itemtype'] == 'UserStory':
-			itemFormattedId = getUserStoryFormattedId('UserStory', item['newvalue'], wksp, proj)  ##TODO Why am I useing a UserStory here?  Perhaps a collection search?
-			pd( "I: {}".format(itemFormattedId))
+		itemFormattedId = item['child']
 
 		pd( "Item ID: {} Parent ID: {}".format(itemFormattedId, parentFormattedId))
+
+		if itemFormattedId == False or parentFormattedId == False:
+			sys.exit(1)
+
 		parentRef = getObjectRefByFormattedId(item['parent_type'], parentFormattedId) 
-
-		rally.setProject(item['project'])
-		data = {"FormattedID" : itemFormattedId, 'PortfolioItem' : getPortfolioItemFeatureRef(item['parent'])}
-		if debug:
-			print "Updating {}".format(item['itemtype'])
-			pprint(data)
-		try:
-			response = rally.update(item['itemtype'], data)
-			if errors in response:
-				print "Error processing record, record dump is next"
-				pprint(response)
-		except Exception, details:
-			print details
-
+		pd("Parent Ref: {}".format(parentRef))
 
 		if item['itemtype'] == 'Task': 
 			print "Tasks are linked when they are created.  We don't move them to other objects"
 			pass
 
 		if item['itemtype'] == 'UserStory':
-			
 			pass
 
 		if item['itemtype'] == 'PortfolioItem/Feature':
+			getPortfolioItemFeatureRef(item['parent'])
 			pass
 
 		if item['itemtype'] == 'PortfolioItem/Initiative':
@@ -546,36 +638,26 @@ def getPortfolioItemFeatureRef(piName):
                         print "Feature Found"
                     #print pe.oid, pe.Name
                     return pe.oid
-"""
-GetObjectOIDorRef 
 
-Gets any generic object by building a collection url, then returning the type asked for
-"""
-def _getObjectOIDorRef(objType, objectName, retType):
+def getPortfolioItemFeatureRefByFId(piName):
     global rally
  
     if debug:
         print "Getting Feature Ref"
 
-    objectName = objectName.lower()
-    if objType == "userstory":
-	objType = "hierarchicalrequirement"
-
-    url = "https://rally1.rallydev.com/slm/webservice/v2.0/{}?".format(objType)
-    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature?")
+    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature?fetch=true")
+    #pprint(collection)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
-                name = '%s' % pe.Name
-                pd(pe.Name)
-                if(name == objectName):
-                    pd("Found Object {}".format(name))
-                    if retType == "oid":
-	                    return pe.oid
-                    if retType == "ref":
-			    return pe.ref
-
-    return False
+                name = '%s' % pe.FormattedID
+                if debug:
+                    print pe.Name
+                if(name == piName):
+                    if debug:
+                        print "Feature Found"
+                    #print pe.oid, pe.Name
+                    return pe.oid
 
 def modifyAltRecords():
 	pass
@@ -600,13 +682,30 @@ def performDailyUpdates():
 	print output_line
 	for story in response:
 		items_added = 0
-		items_added 	= addRecords(story.Name, "Shopping Team", story)
+
+		#rally.setWorkspace('testing')
+		#rally.setProject('Online Store')
+		#getAllUserStories()
+		#printAllUserStories()
+		
+		debug = 1
+		pd("--------")
+		pd("Adding New Entries")
+		pd("--------")
+		#items_added 	= addRecords(story.Name, "Online Store", story)
+		pd("--------")
+		pd("Updating Entries")
+		pd("--------")
 		items_updated  	= modifyRecords(story)
-		items_linked	= linkRecords(story.Name, 'Online Store', story)
+		pd("--------")
+		pd("Linking Entries")
+		pd("--------")
+		#items_linked	= linkRecords(story.Name, 'Online Store', story)
 
-		output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
-		print output_line
-
+		#output_line = "{:40} {:8} {:14} {:13}".format(story.Name, story.CycleDay, items_updated, items_added)
+		#print output_line
+		
+		
 		exit(1)
 
 		"""
