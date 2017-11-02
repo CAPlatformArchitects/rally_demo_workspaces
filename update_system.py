@@ -15,8 +15,19 @@ from pyral import Rally, rallyWorkset
 
 global rally
 global server_name
+
+
+#
+# Setting up Logger
+#
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+handler = logging.FileHandler('daily_updates.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(handler)
 
 story_project_ref = {}
 story_ref = {}
@@ -36,7 +47,7 @@ user_stories = {}
 
 
 def printAllUserStories():
-    print "Dictionary Length: {}".format(len(user_stories))
+    pd("Dictionary Length: {}".format(len(user_stories)))
     for item in user_stories:
 	print(item)
 
@@ -50,11 +61,8 @@ def getAllUserStories():
     if not collection.errors:
             for pe in collection:
                 count += 1
-                #pprint(vars(pe))
-                #output = "Name: {:30} Project {:30} FID: {:5}".format(pe.Name, pe.Project.Name, pe.FormattedID)
-                #print output
-                user_stories[pe.FormattedID] = dict([('FID', pe.FormattedID), ('Name', pe.Name), ('ref', pe.ref), ('oid', pe.oid)])
-    print "Count {}",format(count)
+                user_stories[pe.FormattedID] = dict([('FID', pe.FormattedID), ('Name', pe.Name), ('ref', pe.ref), ('oid', pe.oid), ('Project', pe.Project.Name)])
+    pd("Count {}",format(count))
 
 def getUserStoryRefByName(name):
     if len(user_stories) == 0:
@@ -62,9 +70,17 @@ def getUserStoryRefByName(name):
     for name, value in user_stories.iteritems():
         for x,y in value.iteritems():
            if x == 'FID' and y == name:
-		print value['ref'], value['FID']
+		#print value['ref'], value['FID']
                 return value['ref']
 
+def getProjectByStoryName(name):
+	if len(user_stories) == 0:
+		getAllUserStories()
+	for name, value in user_stories.iteritems():
+		for x,y in value.iteritems():
+			if x == 'Project' and y == name:
+				#print value['Project'], value['FID']
+				return value['Project']
 
 """
 get the first instance of a user
@@ -81,19 +97,12 @@ def getUserRef(user_name):
     if server_name == "integrations" or server_name == "partners":
 	user_name = user_name.replace("@acme.com", "@" + server_name + ".acme.com")
 
-    if debug:
-        print(user_names.items())
-    
     if user_name in user_names:
-        if debug:
-            print("Found %s" % user_name)
         value = user_names[user_name]
     else:
-        if debug:
-            print("Adding name %s " %user_name)
         value = rally.getUserInfo(username=user_name).pop(0).ref
         user_names[user_name] = value
-        
+
     return value
 
 """
@@ -135,7 +144,7 @@ def setInitialCycleDate():
 		try:
 			s = rally.update('UserStory',data, workspace=requests_workspace, project=requests_project)
 		except Exception, details:
-			print "Exception Details: %s" % details
+			pd("Exception Details: %s" % details)
 
 def incrementCycleDate(UserStory):
 	global rally
@@ -143,8 +152,6 @@ def incrementCycleDate(UserStory):
 	global requests_project
 
 	pd("Updating CycleDay for {:5}".format(UserStory.FormattedID))
-	out = UserStory.details()
-	pd(out)
 
 	UpdateCycleDay = UserStory.CycleDay + 1
 	data = {"FormattedID" : UserStory.FormattedID, "CycleDay" : "{}".format(UpdateCycleDay)}
@@ -153,10 +160,9 @@ def incrementCycleDate(UserStory):
 		rally.setProject(requests_project)
 		response = rally.update('UserStory', data)
 	except Exception, details:
-		print "Exception: %s" % details
-		print "Story {:4} CycleDay {}".format(UserStory.FormattedID, UpdateCycleDay)
-		traceback.print_exc()
-		exit(1)
+		pd("Exception: %s" % details)
+		pd("Story {:4} CycleDay {}".format(UserStory.FormattedID, UpdateCycleDay))
+		pd(traceback.print_exc())
 
 def getUserStoryFormattedId(Type, Name, wksp, proj):
 	pd ("Entering get Get User Story formatted id Type: {}, Name: {} Workspace: {} Project: {}".format(Type, Name, wksp, proj))
@@ -180,7 +186,7 @@ def getUserStoryFormattedId(Type, Name, wksp, proj):
 			return item.FormattedID
 
 
-	print "Could not find UserStory with name {}".format(Name)
+	pd("Could not find UserStory with name {}".format(Name))
 	pprint(response)
 	pd("ending at getformattedid()")
 
@@ -205,7 +211,7 @@ def getFormattedId(Type, Name, wksp, proj):
 	response = rally.get(Type, query=query, projectScopeDown=True)
 	for item in response:
 		pprint(response)
-		print "FormattedID : {}".format(item.FormattedID)
+		pd("FormattedID : {}".format(item.FormattedID))
 		return item.FormattedID
 
 	pprint(response)
@@ -272,7 +278,7 @@ def getParentObjectRef(workspace, project, parentType, formattedId):
 	for item in items:
 		return item.ref
 
-	print "Error getting Parent Ref Object"
+	pd( "Error getting Parent Ref Object")
 	return False
 
 def getObjectRefByFormattedId(object_type, formattedId):
@@ -281,7 +287,7 @@ def getObjectRefByFormattedId(object_type, formattedId):
     debug = 0
 
     if not isFormattedId(formattedId):
-	print "Error, no formatted id provided"
+	pd("Error, no formatted id provided")
 	return
 
     pd( "Getting Object Ref by FormattedID {} {}".format(object_type, formattedId) ) 
@@ -296,18 +302,19 @@ def getObjectRefByFormattedId(object_type, formattedId):
                     pd('Found: {} {}'.format(pe.oid, pe.FormattedID))
                     return pe.ref
 
-def getObjectRefByName(object_type, value):
+def getObjectRefByName(object_type, value, project):
     global rally
     global debug
     debug = 1
 
     pd( "Getting Object Ref by Name {} {}".format(object_type, value) )
-
+    rally.setProject(project)
     collection = rally.get(object_type)
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
             for pe in collection:
                 name = '%s' % pe.Name
+		project = '%s' % pe.Project.Name
                 pd(pe.Name)
                 if(name == value):
                     pd('Found: {} {}'.format(pe.oid, pe.Name))
@@ -423,9 +430,7 @@ def modifyRecords(story):
 		output_line = "Updating record: {:5} field: {:15} value: {} proj: {} wksp: {}".format(item['formattedid'], item['field'], item['newvalue'], proj, wksp)
 		pd(output_line)
 		if not isFormattedId(item['formattedid']):
-			pd("NOT A FORMATTED ID: {}".format(item['formattedid']))
 			formattedId = getId(item['itemtype'], item['formattedid'], wksp, proj)
-			pd("FOUND FORMATTED?? {}".format(formattedId))
 		else:
 			formattedId = item['formattedid']
 
@@ -442,8 +447,9 @@ def modifyRecords(story):
 		pd(project)
 		pd("----updating record-----")
 
-		value = getRef(item['field'], item['newvalue'], item['itemtype'])
-		pd("Value is: {}".format(value))
+
+		value = getRef(item['field'], item['newvalue'], item['itemtype'], project)
+		logging.info("Value is: {}".format(value))
 		if item['field'] == 'PortfolioItem/Feature':
 			data = {"FormattedID" : formattedId, 'PortfolioItem' : value}
 		else:
@@ -453,9 +459,7 @@ def modifyRecords(story):
 			record = rally.update(item["itemtype"] , data, project=project)
 			pd("ObjectID: %s  FormattedID: %s" % (record.oid, record.FormattedID))
 		except Exception, details:
-			print "*** EXCEPTION ***"
-			print "exception %s" % details
-			logger.info("Exception %s")
+			logger.info("Exception %s" % details)
 			logger.info(output_line)
 		items_modified += 1
 
@@ -470,7 +474,7 @@ we simply call this and it will return the .ref value, if needed.
 This means we can call this on any value and it will return .refs or
 the actual value.
 """
-def getRef(field, value, object_type):
+def getRef(field, value, object_type, project):
 	global rally
 	global debug
 	debug = True
@@ -486,15 +490,15 @@ def getRef(field, value, object_type):
 
 	if field == 'Iteration':
 		pd('Entering Iteration')
-		return getObjectRefByName(field, value)
+		return getObjectRefByName(field, value, project)
 
 	##TODO TEST THIS!!
 	if field == 'Release':
 		pd('Entering Release')
-		return getObjectRefByName(field, value)
+		return getObjectRefByName(field, value, project)
 
 	if field == 'Project':
-		return getObjectRefByName(field, value)
+		return rally.getProject(value).ref
 
         if field == 'Requirement':
 		return getUserStoryRefByName(value)
@@ -537,17 +541,18 @@ def getUserRef(user_name):
         
     return value
 
-def getReleaseRef(object_value):
+def getReleaseRef(object_value, proj):
     global rally
 
     if debug:
         print "Getting Release Data"
-    collection = rally.get('Release')
+    #collection = rally.get('Release')
+    collection = rally.getCollection("https://rally1.rallydev.com/slm/webservice/v2.0/release?fetch=true")
     assert collection.__class__.__name__ == 'RallyRESTResponse'
     if not collection.errors:
-            for pe in collection:
+          for pe in collection:
                 name = '%s' % pe.Name
-                if(name == object_value):
+                if name == object_value :
                     return pe.ref
 
 """
@@ -692,7 +697,7 @@ def performDailyUpdates():
 		pd("--------")
 		pd("Adding New Entries")
 		pd("--------")
-		#items_added 	= addRecords(story.Name, "Online Store", story)
+		items_added 	= addRecords(story.Name, "Online Store", story)
 		pd("--------")
 		pd("Updating Entries")
 		pd("--------")
@@ -706,7 +711,7 @@ def performDailyUpdates():
 		#print output_line
 		
 		
-		exit(1)
+		#exit(1)
 
 		"""
 		debug = False
@@ -736,7 +741,9 @@ def performDailyUpdates():
         	        elif item['formattedid'] is not None:
 		"""
 
-		incrementCycleDate(story)
+	
+	incrementCycleDate(story)
+	return
 
 def db(database_name='daily_updates'):
     return psycopg2.connect("dbname=daily_updates user=readonly password=readonly host=localhost")
@@ -751,10 +758,7 @@ def query_db(query, args=(), one=False):
     return (r[0] if r else None) if one else r
 
 def pd(arg):
-	global debug
-
-	if debug:
-		print arg
+	logging.info(arg)
 
 def main(args):
 	global rally
@@ -763,6 +767,7 @@ def main(args):
 	global requests_workspace
 	global requests_project
 
+	logger.info('Starting')
 	login_name = ""
 	response = ""
 	requests_workspace = "Workspace Requests"
@@ -795,6 +800,7 @@ def main(args):
 	setInitialCycleDate()
 	performDailyUpdates()
 
+	logger.info('Closing')
         sys.exit(0)
 
 if __name__ == '__main__':
