@@ -13,17 +13,13 @@ import re
 import traceback
 from ConfigParser import SafeConfigParser
 
-## get list of stories in Defined State
-## if story found, execute workspace creation scripts
-## set state to in-progress
+"""
+   
+WARNING:   This was hacked together and set up to do some quick and 
+        dirty work.  Please make no judgements on the quality of the  
+        code.
 
-## get list of workspaces in completed state
-## archive workspace and move to accepted
-
-##DONE Set Color
-##TODO Validate User
-##DONE Set up PID to ensure it doesn't execute multiple times : yes, set this up.
-##DONE Set it up for multiple instances (sales, integrations, partners)
+"""
 
 global rally
 global pidfile

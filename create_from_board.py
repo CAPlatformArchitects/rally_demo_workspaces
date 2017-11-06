@@ -16,18 +16,13 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 
-## get list of stories in Defined State
-## if story found, execute workspace creation scripts
-## set state to in-progress
+"""
 
-## get list of workspaces in completed state
-## archive workspace and move to accepted
+WARNING:   This was hacked together and set up to do some quick and 
+	dirty work.  Please make no judgements on the quality of the
+	code.
 
-#DONE Set color when starting a creation of workspace.
-#DONE Set the archive so it will archive based upon ObjectID, not by name.
-#TODO If the name is wrong, update the user story
-#TODO Email if there's an error
-
+"""
 global rally
 global pidfile
 global server_name
@@ -303,31 +298,15 @@ def archive_workspace():
 				task_update = json.dumps(task_update)
 			if debug:
 				print "Updating Story on Kanban Board %s " % task_update
-			response = ""
 	                try:
 				response = rally.post('Story', task_update)
-                                if debug:
-					print "Status Code %s" % response.status_code
-	                                print "Errors %s" % response.errors
-	                                print "Warnings %s" % repsonse.warnings
+				if debug:
 					print response
 			except Exception, details:
-				if debug:
-                                        print "Status Code %s" % response.status_code
-                                        print "Errors %s" % response.errors
-                                        print "Warnings %s" % repsonse.warnings
-                                        print response
-
 				print "Failure, retrying"
 				#Sometimes the system errors out updating... so I am giving it another try
 				task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
 				response = rally.post('Story', task_update)
-				if debug:
-                        	        print "Status Code %s" % response.status_code
-	        	                print "Errors %s" % response.errors
-        	                        print "Warnings %s" % response.warnings
-
-
 		else:
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace not found.  Moving to Accepted, due to not being found.  If this is in error, please contact the Platform Architects", "ScheduleState" : "Accepted", "DisplayColor" : "#ff0000" }
                         email_msg = "Tried to archive missing workspace %s" % story.FormattedID
@@ -418,18 +397,13 @@ def getStoriesStateDefined():
 
 			if error:
 				task_update = {'FormattedID' : story.FormattedID, 'Notes' : error_reason, "DisplayColor" : "#ff0000", "Workspace_OID" : workspace_objectID}
-				send_email_error(error_reason)
+				send_email_error("Workspace exists")
 			else:
 				task_update = {'ScheduleState' : 'In-Progress', 'FormattedID' : story.FormattedID, "Notes" : "Workspace Created", "DisplayColor" : "#3fa016", "Workspace_OID" : workspace_objectID }
 
 			if debug:
 				print task_update
 			result = rally.post('Story',task_update)
-			if debug:
-				print "Status Code %s" % result.status_code
-				print "Errors %s" % result.errors
-				print "Warnings %s" % result.warnings
-
 
                 else:
                         print "Workspace not matched %s" % name

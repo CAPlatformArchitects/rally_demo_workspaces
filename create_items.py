@@ -14,6 +14,14 @@ import traceback
 global rally
 global server_name
 
+"""
+
+WARNING:   This was hacked together and set up to do some quick and 
+        dirty work.  Please make no judgements on the quality of the  
+        code.
+
+"""
+
 ## TODO: Convert all the lookups to use the cached information
 ## DONE: Adjust the command line so the environment can be passed
 ## DONE: Import the data again, this time using an order field, then order the query
@@ -21,6 +29,7 @@ global server_name
 
 ## Since we are creating all the objects, perhaps if we log them it will be faster.  The information will be cached and we won't need to make additional queries
 ## This will save on server performance and make the script faster
+
 story_project_ref = {}
 story_ref = {}
 testcase_ref = {}
