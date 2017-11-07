@@ -46,6 +46,7 @@ global email_password
 global email_to
 global email_enabled
 global testing_mode
+global dataset
 
 def read_config():
         global rally
@@ -342,12 +343,13 @@ def getStoriesStateDefined():
 	global server_name
 	global exe_path
 	global user_name
+	global dataset
 
 	workspace_objectID = 0
 	error = False
 	error_reason = ""
 	admin_bypass = False
-	fields = "Name,Owner,State,FormattedID,oid,ScheduleState,Expedite"
+	fields = "Name,Owner,State,FormattedID,oid,ScheduleState,Expedite,Dataset"
 	criteria = 'ScheduleState = Defined'
 	collection = rally.get('Story', query=criteria)
 	assert collection.__class__.__name__ == 'RallyRESTResponse'
@@ -355,6 +357,7 @@ def getStoriesStateDefined():
             for story in collection:
 		name = '%s' % story.Name
 		owner = '%s' % story.Owner
+		dataset = '%s' % story.Dataset
 		if owner == None:
 			print "No owner defined, setting default"
 			email_address = user_name
@@ -371,7 +374,7 @@ def getStoriesStateDefined():
 			else:
 				import_command 		= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/import_setup -s ' + server_name + ' -u ' + email_address + ' -n "' + name + '"'
 				data_setup_command 	= 'ruby -W0 ' + exe_path + '/demo_env_ex2ra/bin/data_setup -s ' + server_name + ' -n "' + name + '"'
-				load_data_command 	= exe_path + '/rally_python_tests/create_items.py -s ' + server_name + ' -n "' + name + '"'
+				load_data_command 	= exe_path + '/rally_python_tests/create_items.py -s ' + server_name + ' -n "' + name + '" -d "' + dataset + '"'
 				if debug:
 					print import_command
 				return_code = 0

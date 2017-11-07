@@ -408,6 +408,9 @@ def remove_empty_keys(x):
 	#this was added in to make user story numbers (and other objects) import in a specific order.
 	if 'listing_order' in x:
 		del x['listing_order']
+	#this is to remove the dataset column from import. 
+	if 'dataset' in x:
+		del x['dataset']
 
 def main(args):
 	global rally
@@ -419,9 +422,11 @@ def main(args):
         parser = argparse.ArgumentParser("create_data")
         parser.add_argument("--server", "-s", "--server", required=True, help="Server options = sales, integrations or partner", type=str)
         parser.add_argument("--workspace_name", "-n", "--name", required=True, help="Name of the workspace to update")
+        parser.add_argument("--dataset_name", "-d", "--dataset", required=True, help="Name of the dataset to load")
         args = parser.parse_args()
         workspace_name = args.workspace_name
         server_name = args.server
+	dataset = args.dataset_name
 
 
 	config = SafeConfigParser()
@@ -471,7 +476,7 @@ def main(args):
 	for item_type in objects:
 		item_text = "%s" % item_type
 		print "Processing " + item_text + "..."
-		query_text = "select * from " + item_text + " order by listing_order asc;"
+		query_text = "select * from " + item_text + " where dataset = '" + dataset + "' order by listing_order asc;"
 		my_query = query_db(query_text)
 		#process each item.  We will have to do substitution for values that are references in the data, like projects and user names
 		for item in my_query:
