@@ -32,6 +32,16 @@ global days_back
 
 debug = 0
 
+"""
+   
+WARNING:   This was hacked together and set up to do some quick and 
+        dirty work.  Please make no judgements on the quality of the  
+        code.
+
+"""
+
+
+
 def read_config():
         global rally
         global server_name
