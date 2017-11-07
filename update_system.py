@@ -496,6 +496,12 @@ def getRef(field, value, object_type, project):
 	if field == 'State' and object_type in portfolio_items:
 		return rally.getState(portfolio_items[object_type], value).ref
 
+	if field == 'Parent':
+		if object_type == 'Initiative':
+			pass
+		if object_type == 'Feature':
+			pass
+
 	if field == 'Iteration':
 		pd('Entering Iteration')
 		return getObjectRefByName(field, value, project)
@@ -520,7 +526,49 @@ def getRef(field, value, object_type, project):
 			return getPortfolioItemFeatureRef(value)
 		else:
 			return getPortfolioItemFeatureRefByFId(value)
-		pass
+
+	if field == 'PortfolioItem/Initiative':
+		pd("Getting Initiative Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
+	if field == 'PortfolioItem/Theme':
+		pd("Getting Theme Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
+	if field == 'TestCase':
+		pd("Getting TestCase Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
+	if field == 'TestFolder':
+		pd("Getting TestFolder Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
+	if field == 'TestCaseResult':
+		pd("Getting TestCaseResult Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
+	if field == 'TestSet':
+		pd("Getting Initiative Ref")
+		if isFormattedId(value):
+			pass
+		else:
+			pass
+
 
 	return value
 
@@ -705,11 +753,11 @@ def performDailyUpdates():
 		pd("--------")
 		pd("Adding New Entries")
 		pd("--------")
-		items_added 	= addRecords(story.Name, "Online Store", story)
+		#items_added 	= addRecords(story.Name, "Online Store", story)
 		pd("--------")
 		pd("Updating Entries")
 		pd("--------")
-		items_updated  	= modifyRecords(story)
+		#items_updated  	= modifyRecords(story)
 		pd("--------")
 		pd("Linking Entries")
 		pd("--------")

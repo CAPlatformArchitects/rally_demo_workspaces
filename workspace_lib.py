@@ -1,4 +1,10 @@
 #!/usr/bin/python2.7
+"""
+
+This file is a work in progress... or will likely never be completed.
+Delete from source if it hasn't changed.
+
+"""
 import sys
 import datetime
 import json
