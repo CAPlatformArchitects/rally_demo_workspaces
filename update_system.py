@@ -559,9 +559,9 @@ def getRef(field, value, object_type, project):
         if field == 'PortfolioItem/Feature':
                 pd("Getting Feature Ref")  ## Works for name, not FID... add check for this.
                 if not isFormattedId(value):
-                        return getPortfolioItemFeatureRef(value)
+                        return getPortfolioItemRefByFId(field, value)
                 else:
-                        return getPortfolioItemFeatureRefByFId(value)
+                        return getPortfolioItemRef(field, value)
 
         if field == 'PortfolioItem/Initiative':
                 pd("Getting Initiative Ref")
@@ -706,7 +706,7 @@ def linkRecords(wksp, proj, story):
                         pass
 
                 if item['itemtype'] == 'PortfolioItem/Feature':
-                        getPortfolioItemFeatureRef(item['parent'])
+                        getPortfolioItemRef(item['itemtype'], item['parent'])
                         pass
 
                 if item['itemtype'] == 'PortfolioItem/Initiative':
@@ -757,6 +757,8 @@ def getPortfolioItemRefByFId(portfolio_type, formatID):
                     return pe.oid
 
 
+"""
+DELETE THIS IF IT WORKS
 
 def getPortfolioItemFeatureRef(piName):
     global rally
@@ -797,9 +799,7 @@ def getPortfolioItemFeatureRefByFId(piName):
                         print "Feature Found"
                     #print pe.oid, pe.Name
                     return pe.oid
-
-def modifyAltRecords():
-        pass
+"""
 
 def performDailyUpdates():
         ## We need to get the workspaces that have update_data flag set.
