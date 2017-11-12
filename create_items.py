@@ -480,7 +480,7 @@ def main(args):
 	if debug:
 		rally.enableLogging('output.log')
 
-	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task"]
+	objects = ["Release", "Iteration", "Theme", "Initiative", "Feature", "Story", "Defect", "TestFolder", "TestSet", "TestCase", "TestCaseStep", "TestCaseResult", "Task", "FundingIncrement"]
 
 	for item_type in objects:
 		item_text = "%s" % item_type

@@ -304,10 +304,14 @@ def archive_workspace():
 				if debug:
 					print response
 			except Exception, details:
-				print "Failure, retrying"
-				#Sometimes the system errors out updating... so I am giving it another try
-				task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
-				response = rally.post('Story', task_update)
+				try:
+					print "Failure, retrying"
+					#Sometimes the system errors out updating... so I am giving it another try
+					task_update = {"FormattedID" : story.FormattedID, "ScheduleState" : "Accepted", "DisplayColor" : "#ffffff"}
+					response = rally.post('Story', task_update)
+				except Exception, details:
+					print "Error.. skipping"
+					continue
 		else:
 			task_update = {"FormattedID" : story.FormattedID, "Notes" : "Workspace not found.  Moving to Accepted, due to not being found.  If this is in error, please contact the Platform Architects", "ScheduleState" : "Accepted", "DisplayColor" : "#ff0000" }
                         email_msg = "Tried to archive missing workspace %s" % story.FormattedID
