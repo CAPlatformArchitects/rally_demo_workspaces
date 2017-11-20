@@ -1,0 +1,45 @@
+﻿Project,Name,PlannedVelocity,ReleaseDate,ReleaseStartDate,State,Theme,GrossEstimateConversionRatio,dataset
+Online Store,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Shopping Team,R1,40,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Consumer Site,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Analytics Team,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+API Team,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Fulfillment Team,R1,10,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Reseller Site,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Payment Team,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Reseller Portal Team,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Platform,R1,,11/5/2017 9:35,9/11/2017 9:35,Active,Initial Release - On-line catalog<br><br>* Allow login<br>* Apply security<br>* Product viewing functionality<br>* Purchasing<br>* Credit cards,1,Summer
+Online Store,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Shopping Team,R2,32,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Consumer Site,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Analytics Team,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+API Team,R2,35,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Fulfillment Team,R2,25,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Reseller Site,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Payment Team,R2,25,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Reseller Portal Team,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Platform,R2,,12/31/2017 9:35,11/6/2017 9:35,Active,Second Release - Advanced Purchasing and Shipping<br><br>* Expand purchase functionality<br>* Add shipping<br>* Add search engine<br>* Enhance security,1,Summer
+Online Store,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Shopping Team,R3,36,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Consumer Site,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Analytics Team,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+API Team,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Fulfillment Team,R3,25,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Reseller Site,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Payment Team,R3,20,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Reseller Portal Team,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Platform,R3,,2/25/2018 9:35,1/1/2018 9:35,Planning,Personalization and Customization,1,Summer
+Online Store,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Shopping Team,R4,36,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Consumer Site,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Analytics Team,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+API Team,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Fulfillment Team,R4,25,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Reseller Site,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Payment Team,R4,20,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Reseller Portal Team,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Platform,R4,,4/22/2018 9:35,2/26/2018 9:35,Planning,MVF 2.0 Launch,1,Summer
+Medical Records App,2.3,10,11/5/2017 9:35,9/11/2017 9:35,Accepted,Client Profile Setup,1,Summer
+Medical Records App,2.5,8,12/31/2017 9:35,11/6/2017 9:35,Active,New Patient Administration,1,Summer
+Medical Records App,2.7,8,2/25/2018 9:35,1/1/2018 9:35,Planning,Patient Notifications,1,Summer
+Medical Records App,2.9,8,4/22/2018 9:35,2/26/2018 9:35,Planning,Mobile Access MVF 1.0,1,Summer

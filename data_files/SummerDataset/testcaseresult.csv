@@ -1,0 +1,80 @@
+﻿Build,Date,Duration,Notes,Verdict,TestCase,TestSet,Tester,dataset
+113,11/20/2017 9:35,0,,Pass,Check Invoice Creation,,,Summer
+114,11/20/2017 9:35,0,,Pass,Check Invoice Creation,,,Summer
+1.2.24,11/20/2017 9:35,1,"Only showing 1 order, not 2.",Fail,Check the Status of Your Orders,,,Summer
+112,11/20/2017 9:35,0,,Pass,Check the Status of Your Orders,,,Summer
+115,2016-01-31T20:40:03.000Z,0,,Pass,Check the Status of Your Orders,,,Summer
+117,2016-01-30T20:40:14.000Z,0,,Fail,Default Shipping - Ground,,,Summer
+118,2016-01-31T20:40:14.000Z,0,,Fail,Default Shipping - Ground,,,Summer
+118,2016-01-29T20:40:13.000Z,0,,Pass,GUI - Checkout Button,,,Summer
+119,2016-01-30T20:40:13.000Z,0,,Pass,GUI - Checkout Button,,,Summer
+113,11/20/2017 9:35,0,,Pass,GUI - Checkout Button for Empty Cart,,,Summer
+114,2016-01-30T20:40:14.000Z,0,,Pass,GUI - Checkout Button for Empty Cart,,,Summer
+115,2016-01-31T20:40:14.000Z,0,,Pass,GUI - Checkout Button for Empty Cart,,,Summer
+113,11/20/2017 9:35,0,,Pass,GUI - Multi-Site Shipping Options,,,Summer
+114,2016-01-30T20:40:16.000Z,0,,Pass,GUI - Multi-Site Shipping Options,,,Summer
+115,2016-01-31T20:40:17.000Z,0,,Fail,GUI - Multi-Site Shipping Options,,,Summer
+113,11/20/2017 9:35,0,,Pass,Invalid Promo Code,,,Summer
+114,2016-01-30T20:40:15.000Z,0,,Pass,Invalid Promo Code,,,Summer
+115,2016-01-31T20:40:15.000Z,0,,Fail,Invalid Promo Code,,,Summer
+1.2.24,11/20/2017 9:35,2,,Pass,Log-in to Secured Website,,,Summer
+112,11/20/2017 9:35,0,,Fail,Log-in to Secured Website,,,Summer
+113,11/20/2017 9:35,0,,Pass,Log-in to Secured Website,,,Summer
+114,11/20/2017 9:35,0,,Pass,Log-in to Secured Website,,,Summer
+1.2.24,11/20/2017 9:35,1,,Pass,Log-off Website,,,Summer
+112,11/20/2017 9:35,0,,Fail,Log-off Website,,,Summer
+115,2016-01-31T20:40:02.000Z,0,,Pass,Log-off Website,,,Summer
+113,11/20/2017 9:35,0,,Pass,Max Number of Shipping Destinations,,,Summer
+114,2016-01-30T20:40:16.000Z,0,,Pass,Max Number of Shipping Destinations,,,Summer
+115,2016-01-31T20:40:16.000Z,0,,Fail,Max Number of Shipping Destinations,,,Summer
+113,11/20/2017 9:35,0,,Pass,No Address Entered,,,Summer
+114,11/20/2017 9:35,0,,Pass,No Address Entered,,,Summer
+115,2016-01-31T20:40:07.000Z,0,,Pass,No Address Entered,,,Summer
+113,11/20/2017 9:35,0,,Pass,One Promo Code per order,,,Summer
+114,2016-01-30T20:40:16.000Z,0,,Pass,One Promo Code per order,,,Summer
+115,2016-01-31T20:40:16.000Z,0,,Fail,One Promo Code per order,,,Summer
+113,11/20/2017 9:35,0,,Pass,Order Verification,,,Summer
+114,11/20/2017 9:35,0,,Pass,Order Verification,,,Summer
+113,11/20/2017 9:35,0,,Fail,Order Verification - Backordered Item Handling,,,Summer
+114,11/20/2017 9:35,0,,Fail,Order Verification - Backordered Item Handling,,,Summer
+113,11/20/2017 9:35,0,,Fail,Priority Shipping chosen on a per-package basis,,,Summer
+114,11/20/2017 9:35,0,,Fail,Priority Shipping chosen on a per-package basis,,,Summer
+113,11/20/2017 9:35,0,,Pass,Priority Shipping GUI,,,Summer
+114,2016-01-30T20:40:14.000Z,0,,Pass,Priority Shipping GUI,,,Summer
+115,2016-01-31T20:40:14.000Z,0,,Pass,Priority Shipping GUI,,,Summer
+117,2016-01-31T20:40:16.000Z,0,,Pass,Priority Shipping Options for each Destination,,,Summer
+118,2016-01-31T04:14:51.000Z,0,,Pass,Priority Shipping Options for each Destination,,,Summer
+113,11/20/2017 9:35,0,,Pass,Promo Code GUI,,,Summer
+114,2016-01-30T20:40:15.000Z,0,,Pass,Promo Code GUI,,,Summer
+115,2016-01-31T20:40:15.000Z,0,,Fail,Promo Code GUI,,,Summer
+117,2016-01-30T20:40:11.000Z,2,!! FAILURE NOTE: Unable to purchase exactly MAX items. Error message indicates count exceeded.  Is this a < vs. <= condition?,Fail,Purchase MAX Items,,,Summer
+118,2016-01-31T20:40:12.000Z,1.5,!! FAILURE NOTE: Set # of products to MAX but response email shows MAX minus 1.,Fail,Purchase MAX Items,,,Summer
+113,11/20/2017 9:35,4,!! FAILURE NOTE: Error accessing purchase engine.,Fail,Purchase Multiple Items,,,Summer
+114,2016-01-30T20:40:11.000Z,4.5,!! FAILURE NOTE: All items are showing duplicates.,Fail,Purchase Multiple Items,,,Summer
+113,11/20/2017 9:35,0.5,!! FAILURE NOTE: Entered one item but the cart was still empty.,Fail,Purchase One Item,,,Summer
+114,2016-01-30T20:40:10.000Z,1.5,!! FAILURE NOTE: Entered one item and the cart showed duplicate entries.,Fail,Purchase One Item,,,Summer
+113,11/20/2017 9:35,0,,Fail,Search for Items,,,Summer
+114,2016-01-30T20:40:09.000Z,0,,Pass,Search for Items,,,Summer
+117,2016-01-30T20:40:12.000Z,1.5,!! FAILURE NOTE: Purchased MAX+1 without any error conditions.,Fail,Select MAX+1 Items,,,Summer
+118,2016-01-31T20:40:12.000Z,1.5,!! FAILURE NOTE: Purchased MAX+1 without any error conditions.,Fail,Select MAX+1 Items,,,Summer
+113,11/20/2017 9:35,0,,Pass,Shipping Address and Billing Address must match,,,Summer
+114,11/20/2017 9:35,0,,Pass,Shipping Address and Billing Address must match,,,Summer
+115,2016-01-31T20:40:07.000Z,0,,Pass,Shipping Address and Billing Address must match,,,Summer
+113,11/20/2017 9:35,0,,Pass,"System should support 10,000 concurrent users",,,Summer
+114,11/20/2017 9:35,0,,Pass,"System should support 10,000 concurrent users",,,Summer
+115,2016-01-31T20:40:04.000Z,0,,Pass,"System should support 10,000 concurrent users",,,Summer
+1.2.24,11/20/2017 9:35,1,,Pass,Tracking Information,,,Summer
+113,11/20/2017 9:35,0,,Pass,Tracking Information,,,Summer
+114,11/20/2017 9:35,0,,Fail,Tracking Information,,,Summer
+113,11/20/2017 9:35,0,,Fail,Validate Email Address - Email Authentication,,,Summer
+114,2016-01-31T04:14:51.000Z,0,,Pass,Validate Email Address - Email Authentication,,,Summer
+113,11/20/2017 9:35,0,,Fail,Validate Email Address - Invalid Address Handling,,,Summer
+114,2016-01-31T20:40:08.000Z,0,,Pass,Validate Email Address - Invalid Address Handling,,,Summer
+113,11/20/2017 9:35,0,,Fail,Validate Email Address - Permissions,,,Summer
+114,2016-01-30T20:40:09.000Z,0,,Pass,Validate Email Address - Permissions,,,Summer
+113,11/20/2017 9:35,0,,Pass,Validate website must be available 24x7,,,Summer
+114,11/20/2017 9:35,0,,Pass,Validate website must be available 24x7,,,Summer
+115,2016-01-31T20:40:04.000Z,0,,Fail,Validate website must be available 24x7,,,Summer
+200,11/20/2017 9:35,1,,Fail,Failed Test Case for Demonstration,,,Summer
+201,11/20/2017 9:35,1,,Pass,CheckNewPatient-QA,,,Summer
+202,11/20/2017 9:35,1,,Pass,CheckExistingPatient-QA,,,Summer

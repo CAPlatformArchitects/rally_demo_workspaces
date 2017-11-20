@@ -1,0 +1,12 @@
+﻿Name,Time Criticality,RR/OE Value,Risk Score,Job Size,PlannedStartDate,PlannedEndDate,Parent,Description,DisplayColor,InvestmentCategory,Notes,Ready,ValueScore,Project,State,Owner,dataset
+Minimal online shopping site,13,3,5,3,10/11/2017 9:48,2/10/2018 9:48,Revamp online presence,,,Short Term Growth,,FALSE,8,Consumer Site,Build,rachel@acme.com,Summer
+Build read-write API for handling orders,3,8,0,1,10/6/2017 9:48,12/20/2017 9:48,Create best in class platform,,,Strategic Growth,,FALSE,8,Platform,Build,aaron@acme.com,Summer
+Personalized online shopping experience,13,13,0,2,9/11/2017 9:48,2/25/2018 9:48,Revamp online presence,,,Short Term Growth,,FALSE,3,Consumer Site,Build,rachel@acme.com,Summer
+Modernize customer service portal,1,3,0,1,9/11/2017 9:48,1/26/2018 9:48,Revamp online presence,,,Cost Savings,,FALSE,3,Consumer Site,Build,rachel@acme.com,Summer
+Maintain legacy purchasing system,,,,,11/10/2017 9:48,1/20/2018 9:48,Revamp online presence,,,Cost Savings,,FALSE,1,Consumer Site,Build,rachel@acme.com,Summer
+Re-build primary web app to use API,,,,,10/27/2017 9:48,1/19/2018 9:48,Create best in class platform,,,Cost Savings,,FALSE,3,Platform,Prioritize,aaron@acme.com,Summer
+Integrate in-store and online experience,1,1,3,1,11/5/2017 9:48,3/27/2018 9:48,Revamp online presence,,,Strategic Growth,,FALSE,13,Consumer Site,Prioritize,rachel@acme.com,Summer
+Integrate into Facebook,5,5,3,3,10/21/2017 9:48,1/19/2018 9:48,Revamp online presence,,,Strategic Growth,,FALSE,3,Consumer Site,Prioritize,rachel@acme.com,Summer
+Integrate social into shopping experience,,,,,10/27/2017 9:48,2/18/2018 9:48,Revamp online presence,,,Strategic Growth,,FALSE,5,Consumer Site,Prioritize,rachel@acme.com,Summer
+Create a read-only API,10,5,5,3,11/5/2017 9:48,1/19/2018 9:48,Create best in class platform,Business Case <div><br /></div> <div><br /></div> <div>Read-only API enables integrations with Google....</div>,,Short Term Growth,,FALSE,8,Platform,Business Case,aaron@acme.com,Summer
+Consolidate databases,,,,,11/14/2017 9:48,3/20/2018 9:48,Create best in class platform,,,Strategic Growth,,FALSE,1,Platform,Prioritize,aaron@acme.com,Summer

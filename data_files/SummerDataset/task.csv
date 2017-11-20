@@ -1,0 +1,69 @@
+﻿Name,WorkProduct,State,Owner,Estimate,ToDo,Actuals,Blocked,BlockedReason,Description,DisplayColor,Ready,TaskIndex,dataset
+Link to shipping backend,2-3 Day Shipping,Defined,,6,6,,FALSE,,,,FALSE,0,Summer
+GUI for shipping options,2-3 Day Shipping,Defined,,5,5,,FALSE,,,,FALSE,1,Summer
+Run Functional Tests,2-3 Day Shipping,Defined,,15,15,,FALSE,,,,FALSE,2,Summer
+Write Code,API for Basic Shipping,Defined,,12,12,,FALSE,,,,FALSE,0,Summer
+API Test Harnesses,API for Basic Shipping,Defined,,8,8,,FALSE,,,,FALSE,1,Summer
+Automated Tests,API for Basic Shipping,Defined,,12,12,,FALSE,,,,FALSE,2,Summer
+Run Functional Tests,API for Basic Shipping,Defined,,0,0,,FALSE,,,,FALSE,3,Summer
+Write Code,API for Multi-Site Shipping,Defined,,8,8,,FALSE,,,,FALSE,0,Summer
+API Test Harnesses,API for Multi-Site Shipping,Defined,,12,12,,FALSE,,,,FALSE,1,Summer
+Run Functional Tests,API for Multi-Site Shipping,Defined,,12,12,,FALSE,,,,FALSE,2,Summer
+Create automated Tests,API for Multi-Site Shipping,Defined,,13,13,,FALSE,,,,FALSE,3,Summer
+Use Shipping Web Service for Calculation,Calculate Split Shipping,Completed,,5,0,,FALSE,,,,FALSE,0,Summer
+Filter only company supported shipping options,Calculate Split Shipping,Completed,,3,0,,FALSE,,,,FALSE,1,Summer
+Automated Tests for Web Services API,Calculate Split Shipping,Completed,,13,0,,FALSE,,,,FALSE,2,Summer
+Code,Find My Orders,Defined,,10,10,,FALSE,,,,FALSE,0,Summer
+Create Automated Tests,Find My Orders,Defined,,12,12,,FALSE,,,,FALSE,1,Summer
+Code,Data fields for Shipping information,Completed,,4,0,,FALSE,,,,FALSE,0,Summer
+Create Automated Tests,Data fields for Shipping information,Completed,,11,0,,FALSE,,,,FALSE,1,Summer
+Doc,Data fields for Shipping information,Completed,,6,0,,FALSE,,,,FALSE,2,Summer
+adjust stylesheet properties,latest Promo Code is invalid.,Completed,diane@acme.com,8,0,,FALSE,,,,FALSE,0,Summer
+fix screenshots in online help,latest Promo Code is invalid.,Completed,diane@acme.com,3,0,,FALSE,,,,FALSE,1,Summer
+Code,Provide failover connection to G5 verification service.,Completed,diane@acme.com,10,0,,FALSE,,,,FALSE,0,Summer
+Regression Testing,Provide failover connection to G5 verification service.,Completed,diane@acme.com,15,0,,FALSE,,,,FALSE,1,Summer
+Setup new Servers,Move Server Room,Completed,,14,0,,FALSE,,,,FALSE,0,Summer
+Move Code to new Servers,Move Server Room,Completed,,3,0,,FALSE,,,,FALSE,1,Summer
+Update SQL,Move to Oracle,Completed,,3,0,,FALSE,,,,FALSE,0,Summer
+Setup Oracle,Move to Oracle,Completed,,1,0,,FALSE,,,,FALSE,1,Summer
+Link to shipping backend,Overnight Shipping,In-Progress,,7,7,,FALSE,,,,FALSE,0,Summer
+GUI for shipping options,Overnight Shipping,Defined,,4,4,,FALSE,,,,FALSE,1,Summer
+Run Functional Tests,Overnight Shipping,Defined,,14,14,,FALSE,,,,FALSE,2,Summer
+Database tables for order codes,View By Order,Defined,,2,2,,FALSE,,,,FALSE,0,Summer
+GUI for order pages,View By Order,Defined,,8,8,,FALSE,,,,FALSE,1,Summer
+Run Functional Tests,View By Order,Defined,,11,11,,FALSE,,,,FALSE,2,Summer
+Create automated Tests,View By Order,Defined,,2,2,,FALSE,,<b>I am blocked on this task until dev2 has completed the UI changes I need in order to easily test.</b>,,FALSE,3,Summer
+GUI for Purchase Your Items,Purchase Your Items,Completed,dudley@acme.com,11,0,,FALSE,,,,FALSE,1,Summer
+Create Automated Tests,Purchase Your Items,Completed,tara@acme.com,13,0,,FALSE,,,,FALSE,2,Summer
+Implement Service Layer,Purchase Your Items,In-Progress,daniel@acme.com,8,8,,FALSE,,,,FALSE,3,Summer
+Implement Credit Card Payment Service,Purchase Your Items,In-Progress,diane@acme.com,5,5,,FALSE,,,,FALSE,4,Summer
+Validate GUI design,Purchase Your Items,Defined,diane@acme.com,9,9,,FALSE,,,,FALSE,5,Summer
+Run Manual Tests,Purchase Your Items,Defined,tara@acme.com,3,3,,TRUE,Test environment down.  IT says it'll be back up by 4pm ET.,<strong>Blocked:</strong> Test environment is down.,,FALSE,0,Summer
+Store Data for Recent Purchases,Recent Purchases View,Defined,dudley@acme.com,10,10,,FALSE,,,,FALSE,0,Summer
+Validate GUI styles,Recent Purchases View,Defined,dudley@acme.com,13,13,,FALSE,,,,FALSE,1,Summer
+GUI for recent items list,Recent Purchases View,Defined,diane@acme.com,5,5,,FALSE,,,,FALSE,2,Summer
+Run Functional Tests,Recent Purchases View,Defined,tara@acme.com,14,14,,FALSE,,,,FALSE,3,Summer
+UI for splitting order,Ship Multi-Site Orders,In-Progress,,9,9,,FALSE,,,,FALSE,0,Summer
+Create automated Tests,Ship Multi-Site Orders,In-Progress,,6,6,,TRUE,,<b>I am blocked on this task until dev2 has completed the UI changes I need in order to easily test.</b>,,FALSE,1,Summer
+Document Functionality,Ship Multi-Site Orders,In-Progress,,2,2,,FALSE,,,,FALSE,2,Summer
+Code,Ship Single-Site Order,Completed,,5,0,,FALSE,,,,FALSE,0,Summer
+Create Automated Tests,Ship Single-Site Order,Completed,,0,0,,FALSE,,,,FALSE,1,Summer
+Doc,Ship Single-Site Order,Completed,,7,0,,FALSE,,,,FALSE,2,Summer
+Identify impact on removing order from server cache,Cancel the Order,Defined,,1,1,,FALSE,,,,FALSE,0,Summer
+Review error conditions from payment gateway,Cancel the Order,Defined,,3,3,,FALSE,,,,FALSE,1,Summer
+use new api version call,State drop down doesn't contain any items,Completed,dudley@acme.com,4,4,,FALSE,,,,FALSE,0,Summer
+replace renderer to show display value instead of internal value,State drop down doesn't contain any items,Completed,dudley@acme.com,13,0,,FALSE,,,,FALSE,1,Summer
+Backend Link to Shipping System,Update Shipping System for Each Order,Completed,,9,0,,FALSE,,,,FALSE,0,Summer
+Update Logic,Update Shipping System for Each Order,Completed,,14,0,,FALSE,,,,FALSE,1,Summer
+Automated Tests,Update Shipping System for Each Order,Completed,,4,0,,FALSE,,,,FALSE,2,Summer
+Write front-end validation code,Validate Customer Contact/Shipping info,Completed,daniel@acme.com,12,0,,FALSE,,,,FALSE,0,Summer
+Call Web Service for Address Verification,Validate Customer Contact/Shipping info,Completed,dudley@acme.com,8,0,,FALSE,,,,FALSE,1,Summer
+Document Validation Functionality,Validate Customer Contact/Shipping info,Completed,daniel@acme.com,10,0,,FALSE,,,,FALSE,2,Summer
+Code,Website must be available 24x7,Completed,,11,0,,FALSE,,,,FALSE,0,Summer
+Create Automated Tests,Website must be available 24x7,Completed,,6,0,,FALSE,,,,FALSE,1,Summer
+Create Automated Tests,Unable to login after entering invalid password,Defined,tara@acme.com,14,14,,FALSE,,,,FALSE,1,Summer
+Fix exception handling routing after failed login,Unable to login after entering invalid password,Defined,dudley@acme.com,14,14,,FALSE,,,,FALSE,1,Summer
+Run manual FF browser test,Firefox Browser Tests: Checkout Path,Defined,tara@acme.com,20,20,,,,,,,0,Summer
+Run automated FF browser test,Firefox Browser Tests: Checkout Path,Defined,tara@acme.com,5,5,,,,,,,1,Summer
+Run manual Chrome  browser test,Chrome Browser Tests: Checkout Path,Defined,tara@acme.com,20,20,,,,,,,0,Summer
+Run automated Chrome browser test,Chrome Browser Tests: Checkout Path,Defined,tara@acme.com,5,5,,,,,,,1,Summer

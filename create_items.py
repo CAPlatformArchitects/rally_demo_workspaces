@@ -485,7 +485,7 @@ def main(args):
 	for item_type in objects:
 		item_text = "%s" % item_type
 		print "Processing " + item_text + "..."
-		query_text = "select * from " + item_text + " where dataset = '" + dataset + "' order by listing_order asc;"
+		query_text = "select * from " + item_text + " where dataset = '" + dataset + "';"
 		my_query = query_db(query_text)
 		#process each item.  We will have to do substitution for values that are references in the data, like projects and user names
 		for item in my_query:

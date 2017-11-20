@@ -1,0 +1,27 @@
+﻿ExpectedResult,Input,StepIndex,TestCase,dataset
+My account home page,Login to Shopping Site,0,Purchase One Item,Summer
+Displayed Search results,Search for items,1,Purchase One Item,Summer
+Checked Item,Select one item for purchase,2,Purchase One Item,Summer
+Populated Cart with one item,Choose to add one item to Cart,3,Purchase One Item,Summer
+Completed Purchase of One Item,Purchase Items in Cart,4,Purchase One Item,Summer
+My Home Page,Login to Shopping Site,0,Purchase Multiple Items,Summer
+Displayed Search results,Search for items,1,Purchase Multiple Items,Summer
+Checked Items,Select multiple items for purchase (more than 1),2,Purchase Multiple Items,Summer
+Populated Cart with multiple items,Choose to add multiple items to the Cart (more than 1),3,Purchase Multiple Items,Summer
+Completed Purchase of multiple items,Purchase Items in Cart,4,Purchase Multiple Items,Summer
+My Home Page,Login to Shopping Site,0,Purchase MAX Items,Summer
+Displayed Search results,Search for items,1,Purchase MAX Items,Summer
+Checked Item,Select 100 items for purchase (max),2,Purchase MAX Items,Summer
+Populated Cart with max items,Choose to add 100 items to Cart (max),3,Purchase MAX Items,Summer
+Completed Purchase of One Item,Purchase Items in Cart,4,Purchase MAX Items,Summer
+My Home Page,Login to Shopping Site,0,Select MAX+1 Items,Summer
+Displayed Search results,Search for items,1,Select MAX+1 Items,Summer
+Checked Items,Select 101 items for purchase (max +1),2,Select MAX+1 Items,Summer
+Error message that max +1 reached.,Choose to add 101 items to Cart,3,Select MAX+1 Items,Summer
+Error message purchasing over max not permitted.,Purchase Items in Cart,4,Select MAX+1 Items,Summer
+My Home Page,Login to Shopping Site,0,GUI - Checkout Button,Summer
+Displayed Search results,Search for items,1,GUI - Checkout Button,Summer
+Checked Item,Select one item for purchase,2,GUI - Checkout Button,Summer
+Show Cart,Click GUI Checkout Button,3,GUI - Checkout Button,Summer
+My Home Page,Login to Shopping Site,0,GUI - Checkout Button for Empty Cart,Summer
+Show Empty Cart,Click GUI Checkout Button,1,GUI - Checkout Button for Empty Cart,Summer
